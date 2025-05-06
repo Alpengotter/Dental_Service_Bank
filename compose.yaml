@@ -1,0 +1,44 @@
+version: '3'
+services:
+  dental_service_app:
+    restart: unless-stopped
+    depends_on:
+      - dental_service_db_postgres
+    env_file:
+      - "../config/dental_service/.env"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=${PROFILE}
+#      - DATABASE_URL=${DATABASE_URL}
+    build:
+      context: .
+    ports:
+      - '80:8080'
+    networks:
+      - my_dental_network
+    container_name: dental_service_app
+
+
+  dental_service_db_postgres:
+    restart: on-failure
+    image: postgres
+    container_name: dental_service_db_postgres
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+    volumes:
+      - db_data_dental:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: dental_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: KG41&?uh5^ww)4q
+    ports:
+      - '5433:5432'
+    networks:
+      - my_dental_network
+
+volumes:
+  db_data:
+  db_data_dental:
+networks:
+  my_dental_network:
+    driver: bridge
+#    external: true
