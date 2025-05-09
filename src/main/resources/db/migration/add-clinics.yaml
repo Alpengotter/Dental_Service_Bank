@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_clinics
+      author: Nedobezhkin.M.I.
+      changes:
+        - loadUpdateData:
+            columns:
+              - column:
+                  header: name_
+                  name: name_
+              - column:
+                  header: id
+                  name: id
+            tableName: clinics
+            encoding: UTF-8
+            separator: ','
+            quotchar: '"'
+            primaryKey: id
+            file: db/migration/csv/clinics.csv
+

@@ -15,38 +15,22 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "users")
+@Table(name = "clinics")
 @Getter
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UserEntity {
+public class ClinicEntity {
     @Id
     @ToString.Include
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "last_name")
-    private String lastName;
-    @Column(name = "surname")
-    private String surname;
-    @OneToMany(mappedBy = "user")
+    @Column(name = "name_")
+    private String name;
+    @OneToMany(mappedBy = "clinic")
     private Set<UserClinicMapEntity> userClinicMap;
-    @Column(name = "email")
-    private String email;
-    @Column(name = "password")
-    private String password;
-    @Column(name = "lemons")
-    private Integer lemons;
-    @Column(name = "diamonds")
-    private Integer diamonds;
-    @Column(name = "user_role")
-    private String userRole;
-    @Column(name = "job_title")
-    private String jobTitle;
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "currency_")
+    private Long currency;
 
 }

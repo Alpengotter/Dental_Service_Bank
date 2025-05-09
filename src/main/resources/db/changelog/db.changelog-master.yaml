@@ -5,9 +5,24 @@ databaseChangeLog:
   - include:
       file: db/migration/change_users_table.sql
       relativeToChangelogFile: false
-#  - include:
-#      file: db/migration/add-users.yaml
-#      relativeToChangelogFile: false
+  - include:
+      file: db/migration/create_clinics_table.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/add_surname_users.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/create_user_clinic_map_table.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/add-users.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/add-clinics.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/add-user-clinic-map.yaml
+      relativeToChangelogFile: false
   - include:
       file: db/migration/create_analitics_table.sql
       relativeToChangelogFile: false
@@ -16,4 +31,7 @@ databaseChangeLog:
       relativeToChangelogFile: false
   - include:
       file: db/migration/change_analitique_values.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/change_clinics_and_users_table.sql
       relativeToChangelogFile: false

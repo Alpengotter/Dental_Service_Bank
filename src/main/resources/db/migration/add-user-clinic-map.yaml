@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_user_clinic_map
+      author: Nedobezhkin.M.I.
+      changes:
+        - loadUpdateData:
+            columns:
+              - column:
+                  header: user_id
+                  name: user_id
+              - column:
+                  header: clinic_id
+                  name: clinic_id
+            tableName: user_clinic_map
+            encoding: UTF-8
+            separator: ','
+            quotchar: '"'
+            primaryKey: id
+            file: db/migration/csv/user_clinic_map.csv
+

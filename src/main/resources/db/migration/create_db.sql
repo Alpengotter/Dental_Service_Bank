@@ -4,9 +4,9 @@ create table if not exists users
 (
     id int primary key,
     fullname varchar(50) not null,
-    email varchar(50) unique not null,
+    email varchar(50) unique,
     password varchar(100),
-    lemons int,
+    lemons int default 0,
     diamonds int,
     user_role varchar(25)
     );

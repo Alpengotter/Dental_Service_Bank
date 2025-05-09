@@ -12,15 +12,18 @@ databaseChangeLog:
                   header: last_name
                   name: last_name
               - column:
-                  header: email
-                  name: email
+                  header: surname
+                  name: surname
               - column:
-                  header: job_title
-                  name: job_title
+                  header: id
+                  name: id
             tableName: users
             encoding: UTF-8
             separator: ','
             quotchar: '"'
             primaryKey: id
-            file: db/migration/csv/users.csv
+            splitStatements: false
+            batchSize: 1000
+            usePreparedStatement: true
+            file: db/migration/csv/unique_employees.csv
 

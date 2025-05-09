@@ -1,6 +1,6 @@
 version: '3'
 services:
-  dental_service_app:
+  motivora-api:
     restart: unless-stopped
     depends_on:
       - dental_service_db_postgres
@@ -15,7 +15,7 @@ services:
       - '80:8080'
     networks:
       - my_dental_network
-    container_name: dental_service_app
+    container_name: motivora-api
 
 
   dental_service_db_postgres:

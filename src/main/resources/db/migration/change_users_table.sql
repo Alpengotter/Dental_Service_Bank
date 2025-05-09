@@ -13,10 +13,10 @@ alter table users
 alter user_role set default 'USER';
 --rollback rename column first_name to fullname;
 
---changeset Nedobezhkin.M.I.:add_auto_generation_id
-ALTER TABLE users
-alter id add generated ALWAYS AS IDENTITY;
---rollback ;
+-- --changeset Nedobezhkin.M.I.:add_auto_generation_id
+-- ALTER TABLE users
+-- alter id add generated ALWAYS AS IDENTITY;
+-- --rollback ;
 
 --changeset Nedobezhkin.M.I.:add_is_active_column
 ALTER TABLE users

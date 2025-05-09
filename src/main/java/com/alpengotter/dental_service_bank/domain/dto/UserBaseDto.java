@@ -15,4 +15,6 @@ public class UserBaseDto {
     private String jobTitle;
     @Nullable
     private Boolean isActive;
+    @Nullable
+    private Integer clinic;
 }
