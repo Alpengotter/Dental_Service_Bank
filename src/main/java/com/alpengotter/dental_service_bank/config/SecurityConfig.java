@@ -28,9 +28,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
     private List<String> allowedOrigins = List.of(
-        "https://bankoflemons.ru",
-        "https://store.zarplata.ru",
-        "https://uat.bankoflemons.ru");
+        "https://motivora.ru");
 
     @Bean
     PasswordEncoder passwordEncoder() {
