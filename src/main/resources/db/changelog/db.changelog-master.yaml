@@ -35,3 +35,6 @@ databaseChangeLog:
   - include:
       file: db/migration/change_clinics_and_users_table.sql
       relativeToChangelogFile: false
+  - include:
+      file: db/migration/change_users_currency.sql
+      relativeToChangelogFile: false

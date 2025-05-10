@@ -133,10 +133,15 @@ public class UserService {
         Integer differenceLemons = currencyUpdateDtoDto.getLemons() - currentLemons;
         Integer differenceDiamonds = currencyUpdateDtoDto.getDiamonds() - currentDiamonds;
 
+        userEntity.getUserClinicMap()
+                .forEach(userClinicMapEntity -> {
+                    ClinicEntity clinic = userClinicMapEntity.getClinic();
+                    clinic.setCurrency(clinic.getCurrency() + differenceLemons);
+                });
         userEntity.setDiamonds(currencyUpdateDtoDto.getDiamonds());
         userEntity.setLemons(currencyUpdateDtoDto.getLemons());
 
-        UserEntity saved = userRepository.save(userEntity);
+        UserEntity saved = userRepository.saveAndFlush(userEntity);
 
         historyService.changeCurrency(saved, differenceLemons, differenceDiamonds,
             currencyUpdateDtoDto.getComment());
