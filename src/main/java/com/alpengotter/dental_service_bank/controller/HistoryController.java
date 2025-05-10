@@ -28,5 +28,9 @@ public class HistoryController {
         return historyService.getHistoryById(id);
     }
 
+    @GetMapping("/find-by-comment")
+    public List<HistoryResponseDto> getOrderByComment(@RequestParam("comment") String comment) {
+        return historyService.getHistoryByComment(comment);
+    }
 
 }

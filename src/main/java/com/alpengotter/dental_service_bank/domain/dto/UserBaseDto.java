@@ -1,5 +1,6 @@
 package com.alpengotter.dental_service_bank.domain.dto;
 
+import java.util.List;
 import lombok.Data;
 import org.springframework.lang.Nullable;
 
@@ -7,6 +8,7 @@ import org.springframework.lang.Nullable;
 public class UserBaseDto {
     private String firstName;
     private String lastName;
+    private String surname;
     private String email;
     private Integer lemons;
     private Integer diamonds;
@@ -16,5 +18,5 @@ public class UserBaseDto {
     @Nullable
     private Boolean isActive;
     @Nullable
-    private Integer clinic;
+    private List<Integer> clinics;
 }

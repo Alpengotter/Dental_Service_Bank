@@ -68,28 +68,28 @@ public class ClinicService {
         return userMapper.toUserResponseDto(userEntity);
     }
 
-    @Transactional
-    public List<UserResponseDto> getUserByParameter(String searchParameter) {
-        log.info("Start find by param:{}", searchParameter);
-        String trimParameter = StringUtils.trimToEmpty(searchParameter);
-        log.info("Check is English Symbols");
-        if (isEnglishSymbols(trimParameter)) {
-            log.info("Find by email");
-            Optional<UserEntity> user = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(trimParameter);
-            if (user.isEmpty()) {
-                throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-            }
-            return List.of(userMapper.toUserResponseDto(user.get()));
-        }
-        log.info("Find by Name");
-        List<UserEntity> usersByFirstOrLastName =
-            userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseAndIsActiveIsTrue(trimParameter, trimParameter);
-        if (usersByFirstOrLastName.isEmpty()) {
-            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-        }
-        return userMapper.toListUserResponseDto(usersByFirstOrLastName);
-
-    }
+//    @Transactional
+//    public List<UserResponseDto> getUserByParameter(String searchParameter) {
+//        log.info("Start find by param:{}", searchParameter);
+//        String trimParameter = StringUtils.trimToEmpty(searchParameter);
+//        log.info("Check is English Symbols");
+//        if (isEnglishSymbols(trimParameter)) {
+//            log.info("Find by email");
+//            Optional<UserEntity> user = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(trimParameter);
+//            if (user.isEmpty()) {
+//                throw new LemonBankException(ErrorType.USER_NOT_FOUND);
+//            }
+//            return List.of(userMapper.toUserResponseDto(user.get()));
+//        }
+//        log.info("Find by Name");
+//        List<UserEntity> usersByFirstOrLastName =
+//            userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseAndIsActiveIsTrue(trimParameter, trimParameter);
+//        if (usersByFirstOrLastName.isEmpty()) {
+//            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
+//        }
+//        return userMapper.toListUserResponseDto(usersByFirstOrLastName);
+//
+//    }
 
 //    @Transactional
 //    public UserResponseDto postNewUser(UserBaseDto userBaseDto) {

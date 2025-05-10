@@ -11,6 +11,9 @@ import com.alpengotter.dental_service_bank.service.UserService;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,8 +59,11 @@ public class UserController {
     }
 
     @GetMapping("/find-by-param")
-    public List<UserResponseDto> getEmployeeByEmailOrName(@RequestParam("searchParameter") String searchParameter) {
-        return userService.getUserByParameter(searchParameter);
+    public List<UserResponseDto> getEmployeeByEmailOrName(
+        @RequestParam("searchParameter") String searchParameter,
+        @RequestParam(value = "clinicIds", required = false) Integer[] clinicIds,
+        @PageableDefault(sort = "firstName", direction = Sort.Direction.ASC, size = Integer.MAX_VALUE) Pageable pageable) {
+        return userService.getUserByParameter(searchParameter, clinicIds, pageable);
     }
 
     @PostMapping("")

@@ -20,6 +20,10 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         String email);
 
     @Query("select h from HistoryEntity h "
+        + "where (lower(h.comment) like lower(concat('%', :comment, '%')))")
+    List<HistoryEntity> findByComment(String comment);
+
+    @Query("select h from HistoryEntity h "
         + "left join UserEntity u "
         + "on u.id = h.user.id "
         + "where (h.date between :dateFrom and :dateTo) "

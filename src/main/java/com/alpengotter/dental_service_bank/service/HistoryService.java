@@ -124,4 +124,9 @@ public class HistoryService {
         List<HistoryEntity> historyEntities = historyRepository.findAllByUserIdOrderByIdDesc(id);
         return historyMapper.toHistoryResponseDtoList(historyEntities);
     }
+
+    public List<HistoryResponseDto> getHistoryByComment(String comment) {
+        List<HistoryEntity> historyEntities = historyRepository.findByComment(comment);
+        return historyMapper.toHistoryResponseDtoList(historyEntities);
+    }
 }

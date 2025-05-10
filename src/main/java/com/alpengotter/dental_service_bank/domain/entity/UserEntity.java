@@ -1,5 +1,6 @@
 package com.alpengotter.dental_service_bank.domain.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,7 +33,7 @@ public class UserEntity {
     private String lastName;
     @Column(name = "surname")
     private String surname;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
     private Set<UserClinicMapEntity> userClinicMap;
     @Column(name = "email")
     private String email;

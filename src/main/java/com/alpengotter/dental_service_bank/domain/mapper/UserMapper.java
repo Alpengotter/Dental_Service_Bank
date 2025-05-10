@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         uses = UserMapperService.class)
 public interface UserMapper {
+    @Mapping(target = "clinics", source = "entity.userClinicMap", qualifiedByName = "mapUserClinicMap")
     UserResponseDto toUserResponseDto(UserEntity entity);
     List<UserResponseDto> toListUserResponseDto(Page<UserEntity> entities);
     List<UserResponseDto> toListUserResponseDto(List<UserEntity> entities);

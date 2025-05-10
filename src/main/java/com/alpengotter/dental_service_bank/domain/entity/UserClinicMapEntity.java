@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +31,10 @@ public class UserClinicMapEntity {
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @EqualsAndHashCode.Include
     private UserEntity user;
     @ManyToOne(fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Include
     @JoinColumn(name = "clinic_id")
     private ClinicEntity clinic;
 

@@ -7,20 +7,27 @@ import com.alpengotter.dental_service_bank.domain.dto.UserCurrencyUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserStatusMultipleUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserStatusUpdateDto;
+import com.alpengotter.dental_service_bank.domain.entity.ClinicEntity;
+import com.alpengotter.dental_service_bank.domain.entity.UserClinicMapEntity;
 import com.alpengotter.dental_service_bank.domain.entity.UserEntity;
 import com.alpengotter.dental_service_bank.domain.enums.AnalitiqueType;
 import com.alpengotter.dental_service_bank.domain.mapper.UserMapper;
+import com.alpengotter.dental_service_bank.domain.repository.ClinicRepository;
+import com.alpengotter.dental_service_bank.domain.repository.UserClinicMapRepository;
 import com.alpengotter.dental_service_bank.domain.repository.UserRepository;
 import com.alpengotter.dental_service_bank.handler.ErrorType;
 import com.alpengotter.dental_service_bank.handler.exception.LemonBankException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ClinicRepository clinicRepository;
+    private final UserClinicMapRepository userClinicMapRepository;
     private final UserMapper userMapper;
     private final HistoryService historyService;
     private final AnalitiqueService analitiqueService;
@@ -62,21 +71,23 @@ public class UserService {
     }
 
     @Transactional
-    public List<UserResponseDto> getUserByParameter(String searchParameter) {
+    public List<UserResponseDto> getUserByParameter(String searchParameter, Integer[] clinicIds,
+        Pageable pageable) {
         log.info("Start find by param:{}", searchParameter);
         String trimParameter = StringUtils.trimToEmpty(searchParameter);
-        log.info("Check is English Symbols");
-        if (isEnglishSymbols(trimParameter)) {
-            log.info("Find by email");
-            Optional<UserEntity> user = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(trimParameter);
-            if (user.isEmpty()) {
-                throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-            }
-            return List.of(userMapper.toUserResponseDto(user.get()));
-        }
+//        log.info("Check is English Symbols");
+//        if (isEnglishSymbols(trimParameter)) {
+//            log.info("Find by email");
+//            Optional<UserEntity> user = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(trimParameter);
+//            if (user.isEmpty()) {
+//                throw new LemonBankException(ErrorType.USER_NOT_FOUND);
+//            }
+//            return List.of(userMapper.toUserResponseDto(user.get()));
+//        }
         log.info("Find by Name");
-        List<UserEntity> usersByFirstOrLastName =
-            userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseAndIsActiveIsTrue(trimParameter, trimParameter);
+        Page<UserEntity> usersByFirstOrLastName =
+            userRepository.findActiveUsersByFullNameAndClinics(
+                trimParameter, trimParameter, trimParameter, clinicIds, pageable);
         if (usersByFirstOrLastName.isEmpty()) {
             throw new LemonBankException(ErrorType.USER_NOT_FOUND);
         }
@@ -91,11 +102,21 @@ public class UserService {
             throw new LemonBankException(ErrorType.USER_ALREADY_EXIST);
         }
         UserEntity userEntity = userMapper.toUserEntity(userBaseDto);
+        Set<UserClinicMapEntity> userClinicMap = new HashSet<>(userClinicMapRepository.saveAll(
+            getUserClinicMap(userBaseDto.getClinics(), userEntity)));
+        userEntity.setUserClinicMap(userClinicMap);
+        List<ClinicEntity> clinics = userClinicMap.stream()
+            .map(UserClinicMapEntity::getClinic)
+            .collect(Collectors.toList());
+        List<ClinicEntity> updatedClinics = clinics.stream()
+            .peek(el -> el.setCurrency(el.getCurrency() + userEntity.getLemons()))
+            .collect(Collectors.toList());
+        clinicRepository.saveAll(updatedClinics);
         UserEntity saved = userRepository.save(userEntity);
-        analitiqueService.saveAnalitique(
-            AnalitiqueType.NEW_EMPLOYER.getMessage(),
-            null,
-            null);
+//        analitiqueService.saveAnalitique(
+//            AnalitiqueType.NEW_EMPLOYER.getMessage(),
+//            null,
+//            null);
         return userMapper.toUserResponseDto(saved);
     }
 
@@ -202,5 +223,17 @@ public class UserService {
 
     public Set<String> getUniqueJobTitle() {
         return userRepository.getUniqueJobTitles();
+    }
+
+    private Set<UserClinicMapEntity> getUserClinicMap(List<Integer> clinicIds, UserEntity user) {
+        Set<ClinicEntity> clinics = clinicRepository.findByIdIn(clinicIds);
+        Set<UserClinicMapEntity> result = new HashSet<>();
+        clinics.forEach(clinic -> {
+                UserClinicMapEntity userClinicMapEntity = new UserClinicMapEntity();
+                userClinicMapEntity.setUser(user);
+                userClinicMapEntity.setClinic(clinic);
+                result.add(userClinicMapEntity);
+            });
+        return result;
     }
 }
