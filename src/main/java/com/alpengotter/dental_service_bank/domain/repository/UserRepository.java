@@ -75,4 +75,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
         + "where u.jobTitle is not null "
         + "and trim(u.jobTitle) <> '' ")
     Set<String> getUniqueJobTitles();
+
+    @Query("SELECT DISTINCT u FROM UserEntity u " +
+        "LEFT JOIN FETCH u.userClinicMap ucm " +
+        "LEFT JOIN FETCH ucm.clinic " +
+        "WHERE u.id IN :userIds AND u.isActive = true")
+    List<UserEntity> findAllByIdInAndIsActiveIsTrueWithClinics(List<Integer> userIds);
 }

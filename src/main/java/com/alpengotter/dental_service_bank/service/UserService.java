@@ -180,29 +180,64 @@ public class UserService {
 
     @Transactional
     public List<Integer> updateCurrencyForMultipleUsers(UserCurrencyMultipleUpdateDto updateDto) {
-        List<Integer> userIds = updateDto.getUserIds();
-        Integer count = updateDto.getCount();
-        List<UserEntity> users = userRepository.findAllByIdInAndIsActiveIsTrue(userIds);
-        if (updateDto.getCurrency().equals("lemons")) {
-            users
-                .forEach(user -> {
-                    Integer currentLemons = user.getLemons();
-                    user.setLemons(currentLemons + count);
-                    UserEntity saved = userRepository.save(user);
-                    historyService.changeCurrency(saved, count, 0, updateDto.getComment());
-                });
-
-        } else if (updateDto.getCurrency().equals("diamonds")) {
-            users
-                .forEach(user -> {
-                    Integer currentDiamonds = user.getDiamonds();
-                    user.setDiamonds(currentDiamonds + count);
-                    UserEntity saved = userRepository.save(user);
-                    historyService.changeCurrency(saved, 0, count, updateDto.getComment());
-                });
-        } else {
+//        List<Integer> userIds = updateDto.getUserIds();
+//        Integer count = updateDto.getCount();
+//        List<UserEntity> users = userRepository.findAllByIdInAndIsActiveIsTrue(userIds);
+//        if (updateDto.getCurrency().equals("lemons")) {
+//            users
+//                .forEach(user -> {
+//                    Integer currentLemons = user.getLemons();
+//                    user.setLemons(currentLemons + count);
+//                    user.getUserClinicMap()
+//                        .forEach(userClinicMapEntity -> {
+//                            ClinicEntity clinic = userClinicMapEntity.getClinic();
+//                            clinic.setCurrency(clinic.getCurrency() + count);
+//                        });
+//                    UserEntity saved = userRepository.save(user);
+//                    historyService.changeCurrency(saved, count, 0, updateDto.getComment());
+//                });
+//
+//        } else if (updateDto.getCurrency().equals("diamonds")) {
+//            users
+//                .forEach(user -> {
+//                    Integer currentDiamonds = user.getDiamonds();
+//                    user.setDiamonds(currentDiamonds + count);
+//                    UserEntity saved = userRepository.save(user);
+//                    historyService.changeCurrency(saved, 0, count, updateDto.getComment());
+//                });
+//        } else {
+//            throw new LemonBankException(ErrorType.NOT_CORRECT_CURRENCY);
+//        }
+//        return userIds;
+        // 1. Валидация
+        if (!"lemons".equals(updateDto.getCurrency())) {
             throw new LemonBankException(ErrorType.NOT_CORRECT_CURRENCY);
         }
+
+        List<Integer> userIds = updateDto.getUserIds();
+        Integer count = updateDto.getCount();
+
+        // 2. Получаем пользователей и клиники одним запросом
+        List<UserEntity> users = userRepository.findAllByIdInAndIsActiveIsTrueWithClinics(userIds);
+
+        // 3. Собираем все клиники
+        List<ClinicEntity> clinics = users.stream()
+            .flatMap(user -> user.getUserClinicMap().stream())
+            .map(UserClinicMapEntity::getClinic)
+            .collect(Collectors.toList());
+
+        // 4. Обновляем балансы
+        users.forEach(user -> user.setLemons(user.getLemons() + count));
+        clinics.forEach(clinic -> clinic.setCurrency(clinic.getCurrency() + count));
+
+        // 5. Массовое сохранение
+        userRepository.saveAll(users);
+        clinicRepository.saveAll(clinics);
+
+        // 6. Логирование
+        users.forEach(user ->
+            historyService.changeCurrency(user, count, 0, updateDto.getComment())
+        );
         return userIds;
     }
 
