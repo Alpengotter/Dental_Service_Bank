@@ -12,10 +12,10 @@ public class UserExcelDto {
     @ColumnWidth(30)
     private String name;
     @ExcelProperty("Кол-во зубов")
-    @ColumnWidth(15)
+    @ColumnWidth(30)
     private Integer countLemons;
-    @ExcelProperty("Кол-во алмазов")
-    @ColumnWidth(15)
-    private Integer countDiamonds;
+//    @ExcelProperty("Кол-во алмазов")
+//    @ColumnWidth(15)
+//    private Integer countDiamonds;
 
 }

@@ -30,8 +30,8 @@ public interface HistoryMapper {
     @Mapping(target = "month", source = "filterDto.month", qualifiedByName = "mapDateToMonth")
     @Mapping(target = "countLemonsSpend", source = "filterDto", qualifiedByName = "mapCountLemonsSpend")
     @Mapping(target = "countLemonsAccrued", source = "filterDto", qualifiedByName = "mapCountLemonsAccrued")
-    @Mapping(target = "countDiamondsSpend", source = "filterDto", qualifiedByName = "mapCountDiamondsSpend")
-    @Mapping(target = "countDiamondsAccrued", source = "filterDto", qualifiedByName = "mapCountDiamondsAccrued")
+//    @Mapping(target = "countDiamondsSpend", source = "filterDto", qualifiedByName = "mapCountDiamondsSpend")
+//    @Mapping(target = "countDiamondsAccrued", source = "filterDto", qualifiedByName = "mapCountDiamondsAccrued")
     HistoryExcelDto toHistoryExcelDto(ExcelDateFilterDto filterDto);
 
     List<HistoryExcelDto> toHistoryExcelDtoList(List<ExcelDateFilterDto> excelDateFilterDtoList);

@@ -44,14 +44,14 @@ public class ExcelService {
             if (Objects.nonNull(el.getCountLemons())) {
                 countLemons += el.getCountLemons();
             }
-            if (Objects.nonNull(el.getCountDiamonds())) {
-                countDiamonds += el.getCountDiamonds();
-            }
+//            if (Objects.nonNull(el.getCountDiamonds())) {
+//                countDiamonds += el.getCountDiamonds();
+//            }
         }
         excelList.add(UserExcelDto.builder()
                 .name("Итого")
                 .countLemons(countLemons)
-                .countDiamonds(countDiamonds)
+//                .countDiamonds(countDiamonds)
             .build());
 
         WriteCellStyle headerStyle = new WriteCellStyle();
@@ -132,15 +132,15 @@ public class ExcelService {
         for (HistoryExcelDto el : excelList) {
             countLemonSpend += el.getCountLemonsSpend();
             countLemonAccrued += el.getCountLemonsAccrued();
-            countDiamondsSpend += el.getCountDiamondsSpend();
-            countDiamondsAccrued += el.getCountDiamondsAccrued();
+//            countDiamondsSpend += el.getCountDiamondsSpend();
+//            countDiamondsAccrued += el.getCountDiamondsAccrued();
         }
         excelList.add(HistoryExcelDto.builder()
             .month("Итого")
             .countLemonsSpend(countLemonSpend)
                 .countLemonsAccrued(countLemonAccrued)
-                .countDiamondsSpend(countDiamondsSpend)
-                .countDiamondsAccrued(countDiamondsAccrued)
+//                .countDiamondsSpend(countDiamondsSpend)
+//                .countDiamondsAccrued(countDiamondsAccrued)
             .build());
 
         WriteCellStyle headerStyle = new WriteCellStyle();
