@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ClinicCurrencyUpdateDto {
-    private Integer currency;
+    private Long currency;
     private String comment;
 }

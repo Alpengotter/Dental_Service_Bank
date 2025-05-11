@@ -1,6 +1,7 @@
 package com.alpengotter.dental_service_bank.service;
 
 import com.alpengotter.dental_service_bank.domain.dto.HistoryResponseDto;
+import com.alpengotter.dental_service_bank.domain.entity.ClinicEntity;
 import com.alpengotter.dental_service_bank.domain.entity.HistoryEntity;
 import com.alpengotter.dental_service_bank.domain.entity.OrdersEntity;
 import com.alpengotter.dental_service_bank.domain.entity.UserEntity;
@@ -94,6 +95,29 @@ public class HistoryService {
 
     }
 
+    @Transactional
+    public void changeCurrencyClinic(ClinicEntity clinic, Integer differenceLemons, String comment) {
+        Integer adminId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        log.debug("Admin id:{}", adminId);
+        Optional<UserEntity> admin = userRepository.findByIdAndIsActiveIsTrue(
+            adminId);
+        if (admin.isEmpty()) {
+            throw new LemonBankException(ErrorType.ADMIN_NOT_FOUND);
+        }
+        if (differenceLemons != 0) {
+            HistoryEntity historyLemons = HistoryEntity.builder()
+                .admin(admin.get())
+                .date(LocalDateTime.now())
+                .type("reward")
+                .comment(comment)
+                .order(null)
+                .currency("lemons")
+                .value(differenceLemons)
+                .clinic(clinic)
+                .build();
+            historyRepository.save(historyLemons);
+        }
+    }
 
     @Transactional
     public List<HistoryResponseDto> getHistoryByDateAndParam(String dateFromString, String dateToString,
@@ -111,6 +135,7 @@ public class HistoryService {
             List<HistoryEntity> historyEntities =
                 historyRepository.findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(
                     dateTimeFrom, dateTimeTo, searchParameter, searchParameter);
+            historyEntities.addAll(historyRepository.findByComment(searchParameter, dateTimeFrom, dateTimeTo));
             return historyMapper.toHistoryResponseDtoList(historyEntities);
         }
     }
@@ -120,13 +145,13 @@ public class HistoryService {
     }
 
     @Transactional
-    public List<HistoryResponseDto> getHistoryById(Integer id) {
-        List<HistoryEntity> historyEntities = historyRepository.findAllByUserIdOrderByIdDesc(id);
+    public List<HistoryResponseDto> getHistoryClinicById(Integer id) {
+        List<HistoryEntity> historyEntities = historyRepository.findAllByClinicIdOrderByIdDesc(id);
         return historyMapper.toHistoryResponseDtoList(historyEntities);
     }
 
-    public List<HistoryResponseDto> getHistoryByComment(String comment) {
-        List<HistoryEntity> historyEntities = historyRepository.findByComment(comment);
+    public List<HistoryResponseDto> getHistoryUsersById(Integer id) {
+        List<HistoryEntity> historyEntities = historyRepository.findAllByUserIdOrderByIdDesc(id);
         return historyMapper.toHistoryResponseDtoList(historyEntities);
     }
 }

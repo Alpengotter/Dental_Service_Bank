@@ -20,8 +20,13 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         String email);
 
     @Query("select h from HistoryEntity h "
-        + "where (lower(h.comment) like lower(concat('%', :comment, '%')))")
-    List<HistoryEntity> findByComment(String comment);
+        + "where (lower(h.comment) like lower(concat('%', :comment, '%')) "
+        + "and cast(h.date as date) between cast(:dateFrom as date) and cast(:dateTo as date)) "
+        + "order by h.id desc")
+    List<HistoryEntity> findByComment(
+        String comment,
+        LocalDateTime dateFrom,
+        LocalDateTime dateTo);
 
     @Query("select h from HistoryEntity h "
         + "left join UserEntity u "
@@ -36,6 +41,8 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         String lastName);
 
     List<HistoryEntity> findAllByUserIdOrderByIdDesc(Integer id);
+
+    List<HistoryEntity> findAllByClinicIdOrderByIdDesc(Integer id);
 
     @Query("select abs(sum(h.value)) from HistoryEntity h "
         + "where YEAR(h.date) = :year "

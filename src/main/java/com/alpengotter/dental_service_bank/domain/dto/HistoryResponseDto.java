@@ -8,6 +8,7 @@ public class HistoryResponseDto {
     private Integer id;
     private Integer userId;
     private Integer adminId;
+    private Integer clinicId;
     private LocalDate date;
     private String type;
     private String comment;

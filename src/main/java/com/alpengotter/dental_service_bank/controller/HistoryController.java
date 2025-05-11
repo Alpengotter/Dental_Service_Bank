@@ -17,20 +17,20 @@ public class HistoryController {
     private final HistoryService historyService;
 
     @GetMapping("/find-by-date-and-param")
-    public List<HistoryResponseDto> getOrderById(@RequestParam("dateFrom") String dateFrom,
+    public List<HistoryResponseDto> getHistoryByDateAndParam(@RequestParam("dateFrom") String dateFrom,
                                          @RequestParam("dateTo") String dateTo,
                                          @RequestParam("searchParameter") String searchParameter) {
         return historyService.getHistoryByDateAndParam(dateFrom, dateTo, searchParameter);
     }
 
     @GetMapping("/find-by-id")
-    public List<HistoryResponseDto> getOrderById(@RequestParam("id") Integer id) {
-        return historyService.getHistoryById(id);
+    public List<HistoryResponseDto> getHistoryUsersById(@RequestParam("id") Integer id) {
+        return historyService.getHistoryUsersById(id);
     }
 
-    @GetMapping("/find-by-comment")
-    public List<HistoryResponseDto> getOrderByComment(@RequestParam("comment") String comment) {
-        return historyService.getHistoryByComment(comment);
+    @GetMapping("/find-by-clinics-id")
+    public List<HistoryResponseDto> getHistoryClinicsById(@RequestParam("id") Integer id) {
+        return historyService.getHistoryClinicById(id);
     }
 
 }

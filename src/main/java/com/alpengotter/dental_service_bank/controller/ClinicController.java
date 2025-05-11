@@ -40,6 +40,11 @@ public class ClinicController {
         return clinicService.postNewClinic(userBaseDto);
     }
 
+    @GetMapping("/{id}")
+    public ClinicResponseDto getClinicById(@PathVariable("id") Integer id) {
+        return clinicService.getUserById(id);
+    }
+
     @GetMapping("/find-by-name")
     public List<ClinicResponseDto> getClinicByName(
         @RequestParam(required = false) String name,
@@ -48,9 +53,14 @@ public class ClinicController {
     }
 
     @PutMapping ("/currency/{id}")
-    public ClinicBaseDto updateEmployeeCurrencyById(@PathVariable("id") Integer id, @RequestBody
+    public ClinicBaseDto updateClinicCurrencyById(@PathVariable("id") Integer id, @RequestBody
     ClinicCurrencyUpdateDto currencyUpdateDto) {
         return clinicService.updateClinicCurrency(id, currencyUpdateDto);
+    }
+
+    @GetMapping("/get-all-stat")
+    public StatResponseDto getAllStatistic() {
+        return clinicService.getAllStatistic();
     }
 
 }

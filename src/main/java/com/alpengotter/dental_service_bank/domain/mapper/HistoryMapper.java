@@ -20,6 +20,7 @@ public interface HistoryMapper {
     @Mapping(target = "userId", source = "historyEntity.user.id")
     @Mapping(target = "adminId", source = "historyEntity.admin.id")
     @Mapping(target = "orderId", source = "historyEntity.order.id")
+    @Mapping(target = "clinicId", source = "historyEntity.clinic.id")
     HistoryResponseDto toHistoryResponseDto(HistoryEntity historyEntity);
 
     List<HistoryResponseDto> toHistoryResponseDtoList(List<HistoryEntity> historyEntity);

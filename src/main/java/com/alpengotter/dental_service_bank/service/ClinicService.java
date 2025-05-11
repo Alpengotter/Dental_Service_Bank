@@ -50,13 +50,13 @@ public class ClinicService {
     }
 
     @Transactional
-    public UserResponseDto getUserById(Integer id) {
-        Optional<UserEntity> user = userRepository.findByIdAndIsActiveIsTrue(id);
-        if (user.isEmpty()) {
-            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
+    public ClinicResponseDto getUserById(Integer id) {
+        Optional<ClinicEntity> clinic = clinicRepository.findById(id);
+        if (clinic.isEmpty()) {
+            throw new LemonBankException(ErrorType.CLINIC_NOT_FOUND);
         }
-        UserEntity userEntity = user.get();
-        return userMapper.toUserResponseDto(userEntity);
+        ClinicEntity clinicEntity = clinic.get();
+        return clinicMapper.toClinicResponseDto(clinicEntity);
     }
 
     @Transactional
@@ -68,44 +68,6 @@ public class ClinicService {
         UserEntity userEntity = user.get();
         return userMapper.toUserResponseDto(userEntity);
     }
-
-//    @Transactional
-//    public List<UserResponseDto> getUserByParameter(String searchParameter) {
-//        log.info("Start find by param:{}", searchParameter);
-//        String trimParameter = StringUtils.trimToEmpty(searchParameter);
-//        log.info("Check is English Symbols");
-//        if (isEnglishSymbols(trimParameter)) {
-//            log.info("Find by email");
-//            Optional<UserEntity> user = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(trimParameter);
-//            if (user.isEmpty()) {
-//                throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-//            }
-//            return List.of(userMapper.toUserResponseDto(user.get()));
-//        }
-//        log.info("Find by Name");
-//        List<UserEntity> usersByFirstOrLastName =
-//            userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseAndIsActiveIsTrue(trimParameter, trimParameter);
-//        if (usersByFirstOrLastName.isEmpty()) {
-//            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-//        }
-//        return userMapper.toListUserResponseDto(usersByFirstOrLastName);
-//
-//    }
-
-//    @Transactional
-//    public UserResponseDto postNewUser(UserBaseDto userBaseDto) {
-//        Optional<UserEntity> existedUser = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(userBaseDto.getEmail());
-//        if (existedUser.isPresent()) {
-//            throw new LemonBankException(ErrorType.USER_ALREADY_EXIST);
-//        }
-//        UserEntity userEntity = userMapper.toUserEntity(userBaseDto);
-//        UserEntity saved = userRepository.save(userEntity);
-//        analitiqueService.saveAnalitique(
-//            AnalitiqueType.NEW_EMPLOYER.getMessage(),
-//            null,
-//            null);
-//        return userMapper.toUserResponseDto(saved);
-//    }
 
     @Transactional
     public UserResponseDto updateEmployeeCurrency(Integer id,
@@ -198,13 +160,13 @@ public class ClinicService {
 
     @Transactional
     public StatResponseDto getAllStatistic() {
-        Integer users = userRepository.countAllActiveUsers();
-        Integer diamonds = userRepository.countAllDiamonds();
-        Integer lemons = userRepository.countAllLemons();
+        Integer users = clinicRepository.countAllClinics();
+        Integer diamonds = 0;
+        Integer currency = clinicRepository.countAllCurrency();
         return StatResponseDto.builder()
             .users(users)
             .diamonds(diamonds)
-            .lemons(lemons)
+            .lemons(currency)
             .build();
     }
 
@@ -235,8 +197,31 @@ public class ClinicService {
         return clinicMapper.toClinicResponseDtoList(clinicEntities);
     }
 
-    public ClinicBaseDto updateClinicCurrency(Integer id,
+    public ClinicResponseDto updateClinicCurrency(Integer id,
         ClinicCurrencyUpdateDto currencyUpdateDto) {
-        return null;
+        Optional<ClinicEntity> clinic = clinicRepository.findById(id);
+        if (clinic.isEmpty()) {
+            throw new LemonBankException(ErrorType.CLINIC_NOT_FOUND);
+        }
+        ClinicEntity clinicEntity = clinic.get();
+        Long currentCurrancy = clinicEntity.getCurrency();
+        Integer differenceLemons = Long.valueOf(currencyUpdateDto.getCurrency() - currentCurrancy).intValue();
+
+        clinicEntity.setCurrency(currencyUpdateDto.getCurrency());
+
+        ClinicEntity saved = clinicRepository.save(clinicEntity);
+
+        historyService.changeCurrencyClinic(saved, differenceLemons, currencyUpdateDto.getComment());
+
+//        String currency;
+//        if (differenceDiamonds != 0) {
+//            currency = "diamonds";
+//            analitiqueService.saveAnalitique(AnalitiqueType.REWARD.getMessage(), differenceDiamonds, currency);
+//        } else if (differenceLemons != 0) {
+//            currency = "lemons";
+//            analitiqueService.saveAnalitique(AnalitiqueType.REWARD.getMessage(), differenceLemons, currency);
+//        }
+
+        return clinicMapper.toClinicResponseDto(saved);
     }
 }
