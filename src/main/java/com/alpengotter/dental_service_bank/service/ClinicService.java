@@ -1,6 +1,7 @@
 package com.alpengotter.dental_service_bank.service;
 
 import com.alpengotter.dental_service_bank.domain.dto.ClinicBaseDto;
+import com.alpengotter.dental_service_bank.domain.dto.ClinicCurrencyUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.ClinicResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.StatResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserCurrencyMultipleUpdateDto;
@@ -232,5 +233,10 @@ public class ClinicService {
         Page<ClinicEntity> clinicEntities =
             clinicRepository.findByNameContainingIgnoreCase(trimParameter, pageable);
         return clinicMapper.toClinicResponseDtoList(clinicEntities);
+    }
+
+    public ClinicBaseDto updateClinicCurrency(Integer id,
+        ClinicCurrencyUpdateDto currencyUpdateDto) {
+        return null;
     }
 }

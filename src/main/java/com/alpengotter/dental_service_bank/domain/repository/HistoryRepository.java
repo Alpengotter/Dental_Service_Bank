@@ -26,7 +26,7 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
     @Query("select h from HistoryEntity h "
         + "left join UserEntity u "
         + "on u.id = h.user.id "
-        + "where (h.date between :dateFrom and :dateTo) "
+        + "where (cast(h.date as date) between cast(:dateFrom as date) and cast(:dateTo as date)) "
         + "and ((lower(u.firstName) like lower(concat('%', :firstName, '%'))) or (lower(u.lastName) like lower(concat('%', :lastName, '%'))))"
         + "order by h.id desc ")
     List<HistoryEntity> findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(

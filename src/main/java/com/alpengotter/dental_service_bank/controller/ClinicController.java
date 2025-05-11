@@ -1,6 +1,7 @@
 package com.alpengotter.dental_service_bank.controller;
 
 import com.alpengotter.dental_service_bank.domain.dto.ClinicBaseDto;
+import com.alpengotter.dental_service_bank.domain.dto.ClinicCurrencyUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.ClinicResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.StatResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserBaseDto;
@@ -44,6 +45,12 @@ public class ClinicController {
         @RequestParam(required = false) String name,
         @PageableDefault(sort = "name", direction = Sort.Direction.ASC, size = Integer.MAX_VALUE) Pageable pageable) {
         return clinicService.getClinicByName(name, pageable);
+    }
+
+    @PutMapping ("/currency/{id}")
+    public ClinicBaseDto updateEmployeeCurrencyById(@PathVariable("id") Integer id, @RequestBody
+    ClinicCurrencyUpdateDto currencyUpdateDto) {
+        return clinicService.updateClinicCurrency(id, currencyUpdateDto);
     }
 
 }
