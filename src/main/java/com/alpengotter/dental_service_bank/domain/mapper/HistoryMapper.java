@@ -7,6 +7,7 @@ import com.alpengotter.dental_service_bank.domain.dto.HistoryResponseDto;
 import com.alpengotter.dental_service_bank.domain.entity.HistoryEntity;
 import com.alpengotter.dental_service_bank.domain.mapper.service.HistoryMapperService;
 import java.util.List;
+import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -24,6 +25,7 @@ public interface HistoryMapper {
     HistoryResponseDto toHistoryResponseDto(HistoryEntity historyEntity);
 
     List<HistoryResponseDto> toHistoryResponseDtoList(List<HistoryEntity> historyEntity);
+    List<HistoryResponseDto> toHistoryResponseDtoList(Set<HistoryEntity> historyEntity);
 
     @Mapping(target = "month", source = "filterDto.month", qualifiedByName = "mapDateToMonth")
     @Mapping(target = "countLemonsSpend", source = "filterDto", qualifiedByName = "mapCountLemonsSpend")

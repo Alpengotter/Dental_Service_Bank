@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -132,10 +133,10 @@ public class HistoryService {
                 dateTimeFrom, dateTimeTo, searchParameter);
             return historyMapper.toHistoryResponseDtoList(historyEntities);
         } else {
-            List<HistoryEntity> historyEntities =
+            Set<HistoryEntity> historyEntities =
                 historyRepository.findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(
-                    dateTimeFrom, dateTimeTo, searchParameter, searchParameter);
-            historyEntities.addAll(historyRepository.findByComment(searchParameter, dateTimeFrom, dateTimeTo));
+                    dateTimeFrom, dateTimeTo, searchParameter, searchParameter, searchParameter, searchParameter);
+//            historyEntities.addAll(historyRepository.findByComment(searchParameter, dateTimeFrom, dateTimeTo));
             return historyMapper.toHistoryResponseDtoList(historyEntities);
         }
     }

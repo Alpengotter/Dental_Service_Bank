@@ -3,6 +3,7 @@ package com.alpengotter.dental_service_bank.domain.repository;
 import com.alpengotter.dental_service_bank.domain.entity.HistoryEntity;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -32,13 +33,18 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         + "left join UserEntity u "
         + "on u.id = h.user.id "
         + "where (cast(h.date as date) between cast(:dateFrom as date) and cast(:dateTo as date)) "
-        + "and ((lower(u.firstName) like lower(concat('%', :firstName, '%'))) or (lower(u.lastName) like lower(concat('%', :lastName, '%'))))"
+        + "and ((lower(u.firstName) like lower(concat('%', :firstName, '%'))) "
+        + "or (lower(u.lastName) like lower(concat('%', :lastName, '%'))) "
+        + "or (lower(u.surname) like lower(concat('%', :surname, '%'))) "
+        + "or (lower(h.comment) like lower(concat('%', :comment, '%'))))"
         + "order by h.id desc ")
-    List<HistoryEntity> findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(
+    Set<HistoryEntity> findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(
         LocalDateTime dateFrom,
         LocalDateTime dateTo,
         String firstName,
-        String lastName);
+        String lastName,
+        String surname,
+        String comment);
 
     List<HistoryEntity> findAllByUserIdOrderByIdDesc(Integer id);
 
