@@ -205,7 +205,8 @@ public class ClinicService {
         }
         ClinicEntity clinicEntity = clinic.get();
         Long currentCurrancy = clinicEntity.getCurrency();
-        Integer differenceLemons = Long.valueOf(currencyUpdateDto.getCurrency() - currentCurrancy).intValue();
+        Integer differenceLemons = Math.toIntExact(
+            currencyUpdateDto.getCurrency() - currentCurrancy);
 
         clinicEntity.setCurrency(currencyUpdateDto.getCurrency());
 
