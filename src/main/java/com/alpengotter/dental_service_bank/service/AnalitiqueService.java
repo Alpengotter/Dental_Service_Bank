@@ -27,6 +27,7 @@ public class AnalitiqueService {
     private final AnalitiqueMapper analitiqueMapper;
     private final HistoryRepository historyRepository;
 
+    @Transactional
     public List<AnalitiqueResponseDto> getAnalitique(String type, Integer year, Integer month, Integer day) {
         List<AnalitiqueEntity> analitiqueEntityList = analitiqueRepository
             .findByTypeAndDate(type, year, month, day);

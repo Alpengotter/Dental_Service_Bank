@@ -4,7 +4,10 @@ import com.alpengotter.dental_service_bank.domain.dto.HistoryResponseDto;
 import com.alpengotter.dental_service_bank.service.HistoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +34,12 @@ public class HistoryController {
     @GetMapping("/find-by-clinics-id")
     public List<HistoryResponseDto> getHistoryClinicsById(@RequestParam("id") Integer id) {
         return historyService.getHistoryClinicById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteHistoryById(@PathVariable("id") Integer id) {
+        historyService.deleteHistoryById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

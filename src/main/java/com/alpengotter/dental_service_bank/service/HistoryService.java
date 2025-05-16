@@ -151,8 +151,36 @@ public class HistoryService {
         return historyMapper.toHistoryResponseDtoList(historyEntities);
     }
 
+    @Transactional
     public List<HistoryResponseDto> getHistoryUsersById(Integer id) {
         List<HistoryEntity> historyEntities = historyRepository.findAllByUserIdOrderByIdDesc(id);
         return historyMapper.toHistoryResponseDtoList(historyEntities);
+    }
+
+    @Transactional
+    public void deleteHistoryById(Integer id) {
+        Optional<HistoryEntity> history = historyRepository.findById(id);
+        if (history.isEmpty()) {
+            throw new LemonBankException(ErrorType.HISTORY_NOT_FOUND);
+        }
+        HistoryEntity historyEntity = history.get();
+        int diffCurrency = historyEntity.getValue();
+
+        if (historyEntity.getClinic() != null) {
+            long currentCurrency;
+            ClinicEntity clinic = historyEntity.getClinic();
+            currentCurrency = clinic.getCurrency();
+            clinic.setCurrency(currentCurrency + (-1 * diffCurrency));
+//            historyRepository.delete(historyEntity);
+        } else if (historyEntity.getUser() != null) {
+            int currentCurrency;
+            UserEntity user = historyEntity.getUser();
+            currentCurrency = user.getLemons();
+            user.setLemons(currentCurrency + (-1 * diffCurrency));
+//            historyRepository.delete(historyEntity);
+        } else {
+            throw new LemonBankException(ErrorType.SERVER_ERROR);
+        }
+        historyRepository.delete(historyEntity);
     }
 }
