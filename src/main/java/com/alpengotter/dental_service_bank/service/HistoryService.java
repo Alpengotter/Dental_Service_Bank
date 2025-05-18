@@ -161,24 +161,27 @@ public class HistoryService {
     public void deleteHistoryById(Integer id) {
         Optional<HistoryEntity> history = historyRepository.findById(id);
         if (history.isEmpty()) {
+            log.info("History not found");
             throw new LemonBankException(ErrorType.HISTORY_NOT_FOUND);
         }
         HistoryEntity historyEntity = history.get();
         int diffCurrency = historyEntity.getValue();
-
         if (historyEntity.getClinic() != null) {
             long currentCurrency;
             ClinicEntity clinic = historyEntity.getClinic();
+            log.info("Clinic:{}", clinic);
             currentCurrency = clinic.getCurrency();
             clinic.setCurrency(currentCurrency + (-1 * diffCurrency));
 //            historyRepository.delete(historyEntity);
         } else if (historyEntity.getUser() != null) {
             int currentCurrency;
             UserEntity user = historyEntity.getUser();
+            log.info("User:{}", user);
             currentCurrency = user.getLemons();
             user.setLemons(currentCurrency + (-1 * diffCurrency));
 //            historyRepository.delete(historyEntity);
         } else {
+            log.info("User and clinic is null");
             throw new LemonBankException(ErrorType.SERVER_ERROR);
         }
         historyRepository.delete(historyEntity);
