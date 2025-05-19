@@ -97,10 +97,11 @@ public class UserService {
 
     @Transactional
     public UserResponseDto postNewUser(UserBaseDto userBaseDto) {
-        Optional<UserEntity> existedUser = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(userBaseDto.getEmail());
-        if (existedUser.isPresent()) {
-            throw new LemonBankException(ErrorType.USER_ALREADY_EXIST);
-        }
+        // Убрано, так как теперь мы должны добавлять всех пользователей
+//        Optional<UserEntity> existedUser = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(userBaseDto.getEmail());
+//        if (existedUser.isPresent()) {
+//            throw new LemonBankException(ErrorType.USER_ALREADY_EXIST);
+//        }
         UserEntity userEntity = userMapper.toUserEntity(userBaseDto);
         Set<UserClinicMapEntity> userClinicMap = new HashSet<>(userClinicMapRepository.saveAll(
             getUserClinicMap(userBaseDto.getClinics(), userEntity)));
