@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class HistoryResponseDto {
     private Integer id;
-    private Integer userId;
+    private UserNameDto user;
     private Integer adminId;
-    private Integer clinicId;
+    private ClinicNameDto clinic;
     private LocalDate date;
     private String type;
     private String comment;

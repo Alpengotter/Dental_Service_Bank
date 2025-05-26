@@ -18,10 +18,10 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface HistoryMapper {
 
-    @Mapping(target = "userId", source = "historyEntity.user.id")
+    @Mapping(target = "user", source = "historyEntity.user", qualifiedByName = "mapToUserNameDto")
     @Mapping(target = "adminId", source = "historyEntity.admin.id")
     @Mapping(target = "orderId", source = "historyEntity.order.id")
-    @Mapping(target = "clinicId", source = "historyEntity.clinic.id")
+    @Mapping(target = "clinic", source = "historyEntity.clinic", qualifiedByName = "mapToClinicNameDto")
     HistoryResponseDto toHistoryResponseDto(HistoryEntity historyEntity);
 
     List<HistoryResponseDto> toHistoryResponseDtoList(List<HistoryEntity> historyEntity);

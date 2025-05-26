@@ -1,6 +1,10 @@
 package com.alpengotter.dental_service_bank.domain.mapper.service;
 
+import com.alpengotter.dental_service_bank.domain.dto.ClinicNameDto;
 import com.alpengotter.dental_service_bank.domain.dto.ExcelDateFilterDto;
+import com.alpengotter.dental_service_bank.domain.dto.UserNameDto;
+import com.alpengotter.dental_service_bank.domain.entity.ClinicEntity;
+import com.alpengotter.dental_service_bank.domain.entity.UserEntity;
 import com.alpengotter.dental_service_bank.domain.repository.HistoryRepository;
 import java.time.Month;
 import java.util.Locale;
@@ -20,6 +24,26 @@ public class HistoryMapperService {
         return Month.of(monthNumber).getDisplayName(
             java.time.format.TextStyle.FULL_STANDALONE, russianLocale
         );
+    }
+
+    @Named("mapToUserNameDto")
+    public UserNameDto mapDateToMonth(UserEntity user) {
+        return Optional.ofNullable(user)
+            .map(u -> UserNameDto.builder()
+            .firstName(u.getFirstName())
+            .lastName(u.getLastName())
+            .surname(u.getSurname())
+            .build())
+            .orElse(null);
+    }
+
+    @Named("mapToClinicNameDto")
+    public ClinicNameDto mapDateToMonth(ClinicEntity clinic) {
+        return Optional.ofNullable(clinic)
+            .map(c -> ClinicNameDto.builder()
+            .name(c.getName())
+            .build())
+            .orElse(null);
     }
 
     @Named("mapCountLemonsSpend")

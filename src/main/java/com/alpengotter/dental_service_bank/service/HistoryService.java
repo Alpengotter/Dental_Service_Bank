@@ -128,17 +128,17 @@ public class HistoryService {
         LocalDate dateTo = LocalDate.parse(dateToString, formatter);
         LocalDateTime dateTimeFrom = dateFrom.atStartOfDay();
         LocalDateTime dateTimeTo = dateTo.atStartOfDay();
-        if (isEnglishSymbols(searchParameter)) {
-            List<HistoryEntity> historyEntities = historyRepository.findAllByDateBetweenAndUserEmailContainingOrderByIdDesc(
-                dateTimeFrom, dateTimeTo, searchParameter);
-            return historyMapper.toHistoryResponseDtoList(historyEntities);
-        } else {
+//        if (isEnglishSymbols(searchParameter)) {
+//            List<HistoryEntity> historyEntities = historyRepository.findAllByDateBetweenAndUserEmailContainingOrderByIdDesc(
+//                dateTimeFrom, dateTimeTo, searchParameter);
+//            return historyMapper.toHistoryResponseDtoList(historyEntities);
+//        } else {
             Set<HistoryEntity> historyEntities =
                 historyRepository.findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(
                     dateTimeFrom, dateTimeTo, searchParameter, searchParameter, searchParameter, searchParameter);
 //            historyEntities.addAll(historyRepository.findByComment(searchParameter, dateTimeFrom, dateTimeTo));
             return historyMapper.toHistoryResponseDtoList(historyEntities);
-        }
+//        }
     }
 
     private boolean isEnglishSymbols(String value) {
