@@ -24,6 +24,7 @@ public interface UserMapper {
     UserEntity toUserEntity(UserBaseDto userBaseDto);
 
     @Mapping(target = "name", source = "userEntity", qualifiedByName = "mapFullName")
+    @Mapping(target = "clinic", source = "userEntity", qualifiedByName = "mapClinics")
     @Mapping(target = "countLemons", source = "userEntity.lemons")
 //    @Mapping(target = "countDiamonds", source = "userEntity.diamonds")
     UserExcelDto toUserExcelDto(UserEntity userEntity);

@@ -30,6 +30,23 @@ public class UserMapperService {
         return result.toString();
     }
 
+    @Named("mapClinics")
+    public String mapClinics(UserEntity userEntity) {
+        StringBuilder result = new StringBuilder();
+        String lineSeparator = System.lineSeparator();
+        List<String> clinics = userEntity.getUserClinicMap().stream()
+            .map(UserClinicMapEntity::getClinic)
+            .map(ClinicEntity::getName)
+            .collect(Collectors.toList());
+        for (int i = 0; i < clinics.size(); i++) {
+            result.append(clinics.get(i));
+            if (i != clinics.size() - 1) {
+                result.append(", ");
+            }
+        }
+        return result.toString();
+    }
+
     @Named("mapUserClinicMap")
     public List<String> mapUserClinicMap(Set<UserClinicMapEntity> userClinicMap) {
         return userClinicMap.stream()

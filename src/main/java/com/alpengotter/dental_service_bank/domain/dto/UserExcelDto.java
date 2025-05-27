@@ -11,6 +11,9 @@ public class UserExcelDto {
     @ExcelProperty("ФИО")
     @ColumnWidth(30)
     private String name;
+    @ExcelProperty("Клиника")
+    @ColumnWidth(30)
+    private String clinic;
     @ExcelProperty("Кол-во зубов")
     @ColumnWidth(30)
     private Integer countLemons;
