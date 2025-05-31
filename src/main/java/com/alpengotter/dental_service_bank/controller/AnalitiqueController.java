@@ -17,6 +17,7 @@ public class AnalitiqueController {
 
     private final AnalitiqueService analitiqueService;
 
+    @Deprecated
     @GetMapping("/get-analitique")
     public List<AnalitiqueResponseDto> getAnalitique(
         @RequestParam("type") String type,

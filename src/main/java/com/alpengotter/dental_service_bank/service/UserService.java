@@ -274,19 +274,24 @@ public class UserService {
     }
 
     private void updateUserClinics(UserEntity userEntity, UserBaseDto userBaseDto) {
-        Set<UserClinicMapEntity> userClinicMap = userEntity.getUserClinicMap();
-        userEntity.setUserClinicMap(null);
-        userClinicMapRepository.deleteAll(userClinicMap);
+        if (!userEntity.getUserClinicMap().isEmpty()) {
+            userClinicMapRepository.deleteAll(userEntity.getUserClinicMap());
+            userEntity.getUserClinicMap().clear();
+        }
 
-        if(userBaseDto.getClinics() != null) {
-            Set<UserClinicMapEntity> newUserClinicMaps = new HashSet<>();
-            userBaseDto.getClinics()
-                .forEach(clinicId -> newUserClinicMaps.add(UserClinicMapEntity.builder()
+        // Создание новых связей
+        if (userBaseDto.getClinics() != null && !userBaseDto.getClinics().isEmpty()) {
+            Set<UserClinicMapEntity> newMappings = userBaseDto.getClinics().stream()
+                .map(clinicRepository::findById)
+                .flatMap(Optional::stream) // Java 9+
+                .map(clinic -> UserClinicMapEntity.builder()
                     .user(userEntity)
-                    .clinic(clinicRepository.findById(clinicId).get())
-                    .build()));
-            userEntity.setUserClinicMap(newUserClinicMaps);
-            userClinicMapRepository.saveAll(newUserClinicMaps);
+                    .clinic(clinic)
+                    .build())
+                .collect(Collectors.toSet());
+
+            userEntity.setUserClinicMap(newMappings);
+            userClinicMapRepository.saveAll(newMappings);
         }
     }
 }
