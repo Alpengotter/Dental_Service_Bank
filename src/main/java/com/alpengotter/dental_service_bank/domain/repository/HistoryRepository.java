@@ -36,7 +36,8 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         + "and ((lower(u.firstName) like lower(concat('%', :firstName, '%'))) "
         + "or (lower(u.lastName) like lower(concat('%', :lastName, '%'))) "
         + "or (lower(u.surname) like lower(concat('%', :surname, '%'))) "
-        + "or (lower(h.comment) like lower(concat('%', :comment, '%'))))"
+        + "or (lower(h.comment) like lower(concat('%', :comment, '%')))) "
+        + "and (h.clinic.id in :clinicIds) "
         + "order by h.id desc ")
     Set<HistoryEntity> findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(
         LocalDateTime dateFrom,
@@ -44,7 +45,8 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         String firstName,
         String lastName,
         String surname,
-        String comment);
+        String comment,
+        List<Integer> clinicIds);
 
     List<HistoryEntity> findAllByUserIdOrderByIdDesc(Integer id);
 

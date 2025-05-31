@@ -22,8 +22,9 @@ public class HistoryController {
     @GetMapping("/find-by-date-and-param")
     public List<HistoryResponseDto> getHistoryByDateAndParam(@RequestParam("dateFrom") String dateFrom,
                                          @RequestParam("dateTo") String dateTo,
-                                         @RequestParam("searchParameter") String searchParameter) {
-        return historyService.getHistoryByDateAndParam(dateFrom, dateTo, searchParameter);
+                                         @RequestParam("searchParameter") String searchParameter,
+        @RequestParam(value = "clinicIds", required = false) List<Integer> clinicIds) {
+        return historyService.getHistoryByDateAndParam(dateFrom, dateTo, searchParameter, clinicIds);
     }
 
     @GetMapping("/find-by-id")

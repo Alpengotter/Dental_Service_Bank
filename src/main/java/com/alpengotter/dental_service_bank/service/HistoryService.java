@@ -122,7 +122,7 @@ public class HistoryService {
 
     @Transactional
     public List<HistoryResponseDto> getHistoryByDateAndParam(String dateFromString, String dateToString,
-        String searchParameter) {
+        String searchParameter, List<Integer> clinicIds) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate dateFrom = LocalDate.parse(dateFromString, formatter);
         LocalDate dateTo = LocalDate.parse(dateToString, formatter);
@@ -135,7 +135,7 @@ public class HistoryService {
 //        } else {
             Set<HistoryEntity> historyEntities =
                 historyRepository.findAllByDateBetweenAndUserFirstNameContainingOrUserLastNameContainingOrderByIdDesc(
-                    dateTimeFrom, dateTimeTo, searchParameter, searchParameter, searchParameter, searchParameter);
+                    dateTimeFrom, dateTimeTo, searchParameter, searchParameter, searchParameter, searchParameter, clinicIds);
 //            historyEntities.addAll(historyRepository.findByComment(searchParameter, dateTimeFrom, dateTimeTo));
             return historyMapper.toHistoryResponseDtoList(historyEntities);
 //        }
