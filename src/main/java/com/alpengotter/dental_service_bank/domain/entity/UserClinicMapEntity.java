@@ -23,6 +23,8 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder
+@AllArgsConstructor
 public class UserClinicMapEntity {
     @Id
     @ToString.Include

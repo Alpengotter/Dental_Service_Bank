@@ -9,6 +9,7 @@ import com.alpengotter.dental_service_bank.domain.mapper.service.UserMapperServi
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.data.domain.Page;
 
@@ -30,5 +31,8 @@ public interface UserMapper {
     UserExcelDto toUserExcelDto(UserEntity userEntity);
 
     List<UserExcelDto> toUserExcelDtoList (List<UserEntity> userEntityList);
+
+    @Mapping(target = "id", source = "id")
+    void updateUser(UserBaseDto source, @MappingTarget UserEntity target, Integer id);
 
 }

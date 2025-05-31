@@ -260,4 +260,33 @@ public class UserService {
             });
         return result;
     }
+
+    @Transactional
+    public UserResponseDto updateEmployeeProfile(Integer id, UserBaseDto userBaseDto) {
+        Optional<UserEntity> existedUser = userRepository.findByIdAndIsActiveIsTrue(id);
+        if (existedUser.isEmpty()) {
+            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
+        }
+        UserEntity userEntity = existedUser.get();
+        userMapper.updateUser(userBaseDto, userEntity, id);
+        updateUserClinics(userEntity, userBaseDto);
+        return userMapper.toUserResponseDto(userEntity);
+    }
+
+    private void updateUserClinics(UserEntity userEntity, UserBaseDto userBaseDto) {
+        Set<UserClinicMapEntity> userClinicMap = userEntity.getUserClinicMap();
+        userEntity.setUserClinicMap(null);
+        userClinicMapRepository.deleteAll(userClinicMap);
+
+        if(userBaseDto.getClinics() != null) {
+            Set<UserClinicMapEntity> newUserClinicMaps = new HashSet<>();
+            userBaseDto.getClinics()
+                .forEach(clinicId -> newUserClinicMaps.add(UserClinicMapEntity.builder()
+                    .user(userEntity)
+                    .clinic(clinicRepository.findById(clinicId).get())
+                    .build()));
+            userEntity.setUserClinicMap(newUserClinicMaps);
+            userClinicMapRepository.saveAll(newUserClinicMaps);
+        }
+    }
 }

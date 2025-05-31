@@ -47,6 +47,12 @@ public class UserController {
         return userService.updateEmployeeCurrency(id, currencyUpdateDtoDto);
     }
 
+    @PutMapping ("/profile/{id}")
+    public UserResponseDto updateEmployeeProfile(@PathVariable("id") Integer id, @RequestBody
+    UserBaseDto userBaseDto) {
+        return userService.updateEmployeeProfile(id, userBaseDto);
+    }
+
     @PutMapping ("/status/{id}")
     public UserResponseDto updateEmployeeStatusById(@PathVariable("id") Integer id, @RequestBody
     UserStatusUpdateDto currencyUpdateDtoDto) {
