@@ -93,8 +93,17 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         + "where YEAR(h.date) = :year "
         + "and (:month IS NULL OR MONTH(h.date) = :month) "
         + "and h.currency = 'lemons'"
-        + "and h.value > 0")
-    List<HistoryEntity> findByLemonsAccrued(Integer month, Integer year);
+        + "and h.value > 0 "
+        + "and h.user is not null")
+    List<HistoryEntity> findByLemonsAccruedByUser(Integer month, Integer year);
+
+    @Query("select h from HistoryEntity h "
+        + "where YEAR(h.date) = :year "
+        + "and (:month IS NULL OR MONTH(h.date) = :month) "
+        + "and h.currency = 'lemons'"
+        + "and h.value > 0 "
+        + "and h.clinic is not null")
+    List<HistoryEntity> findByLemonsAccruedByClinic(Integer month, Integer year);
 
     @Query("select h from HistoryEntity h "
         + "where YEAR(h.date) = :year "

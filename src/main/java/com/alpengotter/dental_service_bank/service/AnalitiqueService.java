@@ -3,6 +3,7 @@ package com.alpengotter.dental_service_bank.service;
 import com.alpengotter.dental_service_bank.domain.dto.AnalitiqueResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.AnalitiqueSummaryResponseDto;
 import com.alpengotter.dental_service_bank.domain.entity.AnalitiqueEntity;
+import com.alpengotter.dental_service_bank.domain.entity.HistoryEntity;
 import com.alpengotter.dental_service_bank.domain.mapper.AnalitiqueMapper;
 import com.alpengotter.dental_service_bank.domain.repository.AnalitiqueRepository;
 import com.alpengotter.dental_service_bank.domain.repository.HistoryRepository;
@@ -26,6 +27,8 @@ public class AnalitiqueService {
     private final AnalitiqueRepository analitiqueRepository;
     private final AnalitiqueMapper analitiqueMapper;
     private final HistoryRepository historyRepository;
+    private static final String LEMONS_ACCRUED_BY_USER = "lemons_accrued_by_user";
+    private static final String LEMONS_ACCRUED_BY_CLINIC = "lemons_accrued_by_clinic";
 
     @Transactional
     public List<AnalitiqueResponseDto> getAnalitique(String type, Integer year, Integer month, Integer day) {
@@ -54,26 +57,27 @@ public class AnalitiqueService {
             types = new ArrayList<>();
             types.addAll(List.of(
                 "orders_processed",
-                "lemons_accrued",
+                LEMONS_ACCRUED_BY_USER,
+                LEMONS_ACCRUED_BY_CLINIC,
                 "lemons_spend",
                 "diamonds_accrued",
                 "diamonds_spend",
                 "new_employer"));
         }
 
-        Map<String, List<AnalitiqueEntity>> analitiqueForTypes = getAnalitiqueForTypes(types, year);
+        Map<String, List<HistoryEntity>> analitiqueForTypes = getAnalitiqueForTypes(types, year);
 
         for (String type : types) {
             //TODO Посмотреть, как это можно оптимизировать
             List<Integer> totalMonthList = new ArrayList<>(Collections.nCopies(12, 0));
             Integer total = 0;
-            List<AnalitiqueEntity> analitiqueEntities = analitiqueForTypes.get(type);
-            for (AnalitiqueEntity entity: analitiqueEntities) {
+            List<HistoryEntity> analitiqueEntities = analitiqueForTypes.get(type);
+            for (HistoryEntity entity: analitiqueEntities) {
                 if (StringUtils.contains(entity.getType(), "reward") ||
                     StringUtils.equals(entity.getType(), "order")) {
                     int monthValue = entity.getDate().getMonthValue();
-                    totalMonthList.set(monthValue - 1, totalMonthList.get(monthValue - 1) + Math.abs(entity.getCount()));
-                    total += Math.abs(entity.getCount());
+                    totalMonthList.set(monthValue - 1, totalMonthList.get(monthValue - 1) + Math.abs(entity.getValue()));
+                    total += Math.abs(entity.getValue());
                 } else {
                     int monthValue = entity.getDate().getMonthValue();
                     totalMonthList.set(monthValue - 1, totalMonthList.get(monthValue - 1) + 1);
@@ -90,39 +94,42 @@ public class AnalitiqueService {
         return result;
     }
 
-    private Map<String, List<AnalitiqueEntity>> getAnalitiqueForTypes(List<String> types, Integer year) {
-        Map<String, List<AnalitiqueEntity>> result = new HashMap<>();
+    private Map<String, List<HistoryEntity>> getAnalitiqueForTypes(List<String> types, Integer year) {
+        Map<String, List<HistoryEntity>> result = new HashMap<>();
         for (String type : types) {
             switch (type) {
-                case "orders_processed" -> {
-                    List<AnalitiqueEntity> countProcessedOrders = analitiqueRepository.findAllProcessedOrders(
-                        null, year);
-                    result.put("orders_processed", countProcessedOrders);
+//                case "orders_processed" -> {
+//                    List<AnalitiqueEntity> countProcessedOrders = analitiqueRepository.findAllProcessedOrders(
+//                        null, year);
+//                    result.put("orders_processed", countProcessedOrders);
+//                }
+                case LEMONS_ACCRUED_BY_USER -> {
+                    List<HistoryEntity> findByLemonsAccrued = historyRepository.findByLemonsAccruedByUser(null, year);
+                    result.put(LEMONS_ACCRUED_BY_USER, findByLemonsAccrued);
                 }
-                case "lemons_accrued" -> {
-                    List<AnalitiqueEntity> findByLemonsAccrued = analitiqueMapper.toAnalitiqueEntityList(
-                        historyRepository.findByLemonsAccrued(null, year));
-                    result.put("lemons_accrued", findByLemonsAccrued);
+                case LEMONS_ACCRUED_BY_CLINIC -> {
+                    List<HistoryEntity> findByLemonsAccrued = historyRepository.findByLemonsAccruedByClinic(null, year);
+                    result.put(LEMONS_ACCRUED_BY_CLINIC, findByLemonsAccrued);
                 }
-                case "lemons_spend" -> {
-                    List<AnalitiqueEntity> findByLemonsSpend = analitiqueMapper.toAnalitiqueEntityList(
-                        historyRepository.findByLemonsSpend(null, year));
-                    result.put("lemons_spend", findByLemonsSpend);
-                }
-                case "diamonds_spend" -> {
-                    List<AnalitiqueEntity> findByDiamondsSpend = analitiqueMapper.toAnalitiqueEntityList(
-                        historyRepository.findByDiamondsSpend(null, year));
-                    result.put("diamonds_spend", findByDiamondsSpend);
-                }
-                case "diamonds_accrued" -> {
-                    List<AnalitiqueEntity> findByDiamondsAccrued = analitiqueMapper.toAnalitiqueEntityList(
-                        historyRepository.findByDiamondsAccrued(null, year));
-                    result.put("diamonds_accrued", findByDiamondsAccrued);
-                }
-                case "new_employer" -> {
-                    List<AnalitiqueEntity> findByNewEmployers = analitiqueRepository.findNewEmployers(year);
-                    result.put("new_employer", findByNewEmployers);
-                }
+//                case "lemons_spend" -> {
+//                    List<AnalitiqueEntity> findByLemonsSpend = analitiqueMapper.toAnalitiqueEntityList(
+//                        historyRepository.findByLemonsSpend(null, year));
+//                    result.put("lemons_spend", findByLemonsSpend);
+//                }
+//                case "diamonds_spend" -> {
+//                    List<AnalitiqueEntity> findByDiamondsSpend = analitiqueMapper.toAnalitiqueEntityList(
+//                        historyRepository.findByDiamondsSpend(null, year));
+//                    result.put("diamonds_spend", findByDiamondsSpend);
+//                }
+//                case "diamonds_accrued" -> {
+//                    List<AnalitiqueEntity> findByDiamondsAccrued = analitiqueMapper.toAnalitiqueEntityList(
+//                        historyRepository.findByDiamondsAccrued(null, year));
+//                    result.put("diamonds_accrued", findByDiamondsAccrued);
+//                }
+//                case "new_employer" -> {
+//                    List<AnalitiqueEntity> findByNewEmployers = analitiqueRepository.findNewEmployers(year);
+//                    result.put("new_employer", findByNewEmployers);
+//                }
                 default -> throw new IllegalArgumentException("Unknown type: " + type);
             }
         }
