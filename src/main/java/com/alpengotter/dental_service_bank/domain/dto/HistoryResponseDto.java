@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class HistoryResponseDto {
     private Integer id;
-    private UserNameDto user;
+    private UserResponseDto user;
     private Integer adminId;
     private ClinicNameDto clinic;
     private LocalDate date;

@@ -3,8 +3,10 @@ package com.alpengotter.dental_service_bank.domain.mapper.service;
 import com.alpengotter.dental_service_bank.domain.dto.ClinicNameDto;
 import com.alpengotter.dental_service_bank.domain.dto.ExcelDateFilterDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserNameDto;
+import com.alpengotter.dental_service_bank.domain.dto.UserResponseDto;
 import com.alpengotter.dental_service_bank.domain.entity.ClinicEntity;
 import com.alpengotter.dental_service_bank.domain.entity.UserEntity;
+import com.alpengotter.dental_service_bank.domain.mapper.UserMapper;
 import com.alpengotter.dental_service_bank.domain.repository.HistoryRepository;
 import java.time.Month;
 import java.util.Locale;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class HistoryMapperService {
+    private final UserMapper userMapper;
     private final HistoryRepository historyRepository;
 
     @Named("mapDateToMonth")
@@ -24,6 +27,11 @@ public class HistoryMapperService {
         return Month.of(monthNumber).getDisplayName(
             java.time.format.TextStyle.FULL_STANDALONE, russianLocale
         );
+    }
+
+    @Named("mapToUserResponseDto")
+    public UserResponseDto mapToUserResponseDto(UserEntity entity) {
+        return userMapper.toUserResponseDto(entity);
     }
 
     @Named("mapToUserNameDto")
