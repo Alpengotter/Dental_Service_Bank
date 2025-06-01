@@ -46,6 +46,13 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/employers/find-by-email-open/*").permitAll()
                 .requestMatchers("/api/v1/history/find-by-date-and-param/*").permitAll()
                 .requestMatchers("/api/v1/orders/create").permitAll()
+                .requestMatchers(
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll()
                 .anyRequest().hasAuthority("ADMIN"))
             .exceptionHandling(exc -> exc
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.INTERNAL_SERVER_ERROR)))
