@@ -34,4 +34,10 @@ public class AnalitiqueController {
         return analitiqueService.getAnalitiqueSummary(typeList, year);
     }
 
+    @GetMapping("/get-analitique-summary-comment")
+    public List<AnalitiqueSummaryResponseDto> getAnalitiqueSummaryByComment(
+        @RequestParam(value = "year") Integer year) {
+        return analitiqueService.getAnalitiqueSummaryByComment(year);
+    }
+
 }

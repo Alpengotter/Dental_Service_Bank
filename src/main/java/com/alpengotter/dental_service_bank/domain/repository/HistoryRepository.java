@@ -50,6 +50,10 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         String comment,
         List<Integer> clinicIds);
 
+    @Query("select distinct h.comment from HistoryEntity h "
+        + "where (:year IS NULL OR YEAR(h.date) = :year) ")
+    List<String> findUniqueCommentsByYear(Integer year);
+
     List<HistoryEntity> findAllByUserIdOrderByIdDesc(Integer id);
 
     List<HistoryEntity> findAllByClinicIdOrderByIdDesc(Integer id);
@@ -92,7 +96,7 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
     @Query("select h from HistoryEntity h "
         + "where YEAR(h.date) = :year "
         + "and (:month IS NULL OR MONTH(h.date) = :month) "
-        + "and h.currency = 'lemons'"
+        + "and h.currency = 'lemons' "
         + "and h.value > 0 "
         + "and h.user is not null")
     List<HistoryEntity> findByLemonsAccruedByUser(Integer month, Integer year);
@@ -100,10 +104,18 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
     @Query("select h from HistoryEntity h "
         + "where YEAR(h.date) = :year "
         + "and (:month IS NULL OR MONTH(h.date) = :month) "
-        + "and h.currency = 'lemons'"
+        + "and h.currency = 'lemons' "
         + "and h.value > 0 "
         + "and h.clinic is not null")
     List<HistoryEntity> findByLemonsAccruedByClinic(Integer month, Integer year);
+
+    @Query("select h from HistoryEntity h "
+        + "where YEAR(h.date) = :year "
+        + "and (:month IS NULL OR MONTH(h.date) = :month) "
+        + "and h.currency = 'lemons' "
+        + "and h.value > 0 "
+        + "and h.comment = :comment ")
+    List<HistoryEntity> findByLemonsAccruedByComment(Integer month, Integer year, String comment);
 
     @Query("select h from HistoryEntity h "
         + "where YEAR(h.date) = :year "

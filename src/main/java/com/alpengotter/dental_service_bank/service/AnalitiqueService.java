@@ -135,4 +135,36 @@ public class AnalitiqueService {
         }
         return result;
     }
+
+    public List<AnalitiqueSummaryResponseDto> getAnalitiqueSummaryByComment(Integer year) {
+        List<AnalitiqueSummaryResponseDto> result = new ArrayList<>();
+        List<String> uniqueComments = historyRepository.findUniqueCommentsByYear(year);
+        Map<String, List<HistoryEntity>> analitiqueForComments = getAnalitiqueForComments(uniqueComments, year);
+
+        for (String comment : uniqueComments) {
+            List<Integer> totalMonthList = new ArrayList<>(Collections.nCopies(12, 0));
+            Integer total = 0;
+            List<HistoryEntity> analitiqueEntities = analitiqueForComments.get(comment);
+            for (HistoryEntity entity: analitiqueEntities) {
+                int monthValue = entity.getDate().getMonthValue();
+                totalMonthList.set(monthValue - 1, totalMonthList.get(monthValue - 1) + Math.abs(entity.getValue()));
+                total += Math.abs(entity.getValue());
+            }
+            result.add(AnalitiqueSummaryResponseDto.builder()
+                .type(comment)
+                .totalMounth(totalMonthList)
+                .total(total)
+                .build());
+        }
+        return result;
+    }
+
+
+    private Map<String, List<HistoryEntity>> getAnalitiqueForComments(List<String> comments, Integer year) {
+        Map<String, List<HistoryEntity>> result = new HashMap<>();
+        for (String comment : comments) {
+            result.put(comment, historyRepository.findByLemonsAccruedByComment(null, year, comment));
+        }
+        return result;
+    }
 }
