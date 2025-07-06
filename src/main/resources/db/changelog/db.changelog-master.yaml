@@ -53,3 +53,6 @@ databaseChangeLog:
   - include:
       file: db/migration/add-nominations.yaml
       relativeToChangelogFile: false
+  - include:
+      file: db/migration/change_nominations_table.sql
+      relativeToChangelogFile: false
