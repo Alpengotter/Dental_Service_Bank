@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_nominations
+      author: Nedobezhkin.M.I.
+      changes:
+        - loadUpdateData:
+            columns:
+              - column:
+                  header: title
+                  name: title_
+              - column:
+                  header: value
+                  name: value_
+              - column:
+                  header: type
+                  name: type_
+            tableName: nominations
+            encoding: UTF-8
+            separator: ','
+            quotchar: '"'
+            primaryKey: id
+            splitStatements: false
+            batchSize: 1000
+            usePreparedStatement: true
+            file: db/migration/csv/nominations.csv
+

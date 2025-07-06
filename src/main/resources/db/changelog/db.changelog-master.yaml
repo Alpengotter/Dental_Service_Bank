@@ -47,3 +47,9 @@ databaseChangeLog:
   - include:
       file: db/migration/delete_clinics.sql
       relativeToChangelogFile: false
+  - include:
+      file: db/migration/create_nominations_table.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/add-nominations.yaml
+      relativeToChangelogFile: false
