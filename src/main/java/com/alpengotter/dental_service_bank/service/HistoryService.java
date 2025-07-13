@@ -1,11 +1,13 @@
 package com.alpengotter.dental_service_bank.service;
 
 import com.alpengotter.dental_service_bank.domain.dto.HistoryResponseDto;
+import com.alpengotter.dental_service_bank.domain.entity.ActivitiesEntity;
 import com.alpengotter.dental_service_bank.domain.entity.ClinicEntity;
 import com.alpengotter.dental_service_bank.domain.entity.HistoryEntity;
 import com.alpengotter.dental_service_bank.domain.entity.OrdersEntity;
 import com.alpengotter.dental_service_bank.domain.entity.UserEntity;
 import com.alpengotter.dental_service_bank.domain.mapper.HistoryMapper;
+import com.alpengotter.dental_service_bank.domain.repository.ActivitiesRepository;
 import com.alpengotter.dental_service_bank.domain.repository.HistoryRepository;
 import com.alpengotter.dental_service_bank.domain.repository.UserRepository;
 import com.alpengotter.dental_service_bank.handler.ErrorType;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HistoryService {
     private final HistoryRepository historyRepository;
     private final UserRepository userRepository;
+    private final ActivitiesRepository activitiesRepository;
     private final HistoryMapper historyMapper;
 
     @Transactional
@@ -58,21 +61,21 @@ public class HistoryService {
     }
 
     @Transactional
-    public void changeCurrency(UserEntity user, Integer differenceLemons, Integer differenceDiamonds, String comment) {
+    public void changeCurrency(UserEntity user, Integer differenceLemons, Integer differenceDiamonds, String comment, Integer activitiesId) {
         Integer adminId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         log.debug("Admin id:{}", adminId);
-        Optional<UserEntity> admin = userRepository.findByIdAndIsActiveIsTrue(
-            adminId);
-        if (admin.isEmpty()) {
-            throw new LemonBankException(ErrorType.ADMIN_NOT_FOUND);
-        }
+        UserEntity admin = userRepository.findByIdAndIsActiveIsTrue(adminId)
+            .orElseThrow(() -> new LemonBankException(ErrorType.ADMIN_NOT_FOUND));
+        ActivitiesEntity activitiesEntity = activitiesRepository.findById(activitiesId)
+            .orElse(null);
         if (differenceLemons != 0) {
             HistoryEntity historyLemons = HistoryEntity.builder()
-                .admin(admin.get())
+                .admin(admin)
                 .user(user)
                 .date(LocalDateTime.now())
                 .type("reward")
                 .comment(comment)
+                .activities(activitiesEntity)
                 .order(null)
                 .currency("lemons")
                 .value(differenceLemons)
@@ -82,11 +85,12 @@ public class HistoryService {
 
         if (differenceDiamonds != 0) {
             HistoryEntity historyDiamonds = HistoryEntity.builder()
-                .admin(admin.get())
+                .admin(admin)
                 .user(user)
                 .date(LocalDateTime.now())
                 .type("reward")
                 .comment(comment)
+                .activities(activitiesEntity)
                 .order(null)
                 .currency("diamonds")
                 .value(differenceDiamonds)
@@ -97,22 +101,22 @@ public class HistoryService {
     }
 
     @Transactional
-    public void changeCurrencyClinic(ClinicEntity clinic, Integer differenceLemons, String comment) {
+    public void changeCurrencyClinic(ClinicEntity clinic, Integer differenceLemons, String comment, Integer activitiesId) {
         Integer adminId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         log.debug("Admin id:{}", adminId);
-        Optional<UserEntity> admin = userRepository.findByIdAndIsActiveIsTrue(
-            adminId);
-        if (admin.isEmpty()) {
-            throw new LemonBankException(ErrorType.ADMIN_NOT_FOUND);
-        }
+        UserEntity admin = userRepository.findByIdAndIsActiveIsTrue(adminId)
+            .orElseThrow(() -> new LemonBankException(ErrorType.ADMIN_NOT_FOUND));
+        ActivitiesEntity activitiesEntity = activitiesRepository.findById(activitiesId)
+            .orElse(null);
         if (differenceLemons != 0) {
             HistoryEntity historyLemons = HistoryEntity.builder()
-                .admin(admin.get())
+                .admin(admin)
                 .date(LocalDateTime.now())
                 .type("reward")
                 .comment(comment)
                 .order(null)
                 .currency("lemons")
+                .activities(activitiesEntity)
                 .value(differenceLemons)
                 .clinic(clinic)
                 .build();

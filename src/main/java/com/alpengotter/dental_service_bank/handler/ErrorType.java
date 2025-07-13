@@ -13,6 +13,7 @@ public enum ErrorType {
     CLINIC_NOT_FOUND("Clinic not found", HttpStatus.NOT_FOUND),
     ADMIN_NOT_FOUND("Admin not found", HttpStatus.NOT_FOUND),
     ORDER_NOT_FOUND("Order not found", HttpStatus.NOT_FOUND),
+    ACTIVITIES_NOT_FOUND("Activities not found", HttpStatus.NOT_FOUND),
     HISTORY_NOT_FOUND("History not found", HttpStatus.NOT_FOUND),
     USER_ALREADY_EXIST("User already exist", HttpStatus.BAD_REQUEST),
     CLINIC_ALREADY_EXIST("Clinic already exist", HttpStatus.BAD_REQUEST),

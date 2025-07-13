@@ -9,4 +9,5 @@ public class UserCurrencyMultipleUpdateDto {
     private Integer count;
     private String currency;
     private String comment;
+    private Integer activitiesId;
 }

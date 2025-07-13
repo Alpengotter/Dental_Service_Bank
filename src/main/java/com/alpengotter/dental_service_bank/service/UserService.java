@@ -116,7 +116,7 @@ public class UserService {
 
     @Transactional
     public UserResponseDto updateEmployeeCurrency(Integer id,
-        UserCurrencyUpdateDto currencyUpdateDtoDto) {
+        UserCurrencyUpdateDto currencyUpdateDto) {
         Optional<UserEntity> user = userRepository.findByIdAndIsActiveIsTrue(id);
         if (user.isEmpty()) {
             throw new LemonBankException(ErrorType.USER_NOT_FOUND);
@@ -124,16 +124,16 @@ public class UserService {
         UserEntity userEntity = user.get();
         Integer currentLemons = userEntity.getLemons();
         Integer currentDiamonds = userEntity.getDiamonds();
-        Integer differenceLemons = currencyUpdateDtoDto.getLemons() - currentLemons;
-        Integer differenceDiamonds = currencyUpdateDtoDto.getDiamonds() - currentDiamonds;
+        Integer differenceLemons = currencyUpdateDto.getLemons() - currentLemons;
+        Integer differenceDiamonds = currencyUpdateDto.getDiamonds() - currentDiamonds;
 
-        userEntity.setDiamonds(currencyUpdateDtoDto.getDiamonds());
-        userEntity.setLemons(currencyUpdateDtoDto.getLemons());
+        userEntity.setDiamonds(currencyUpdateDto.getDiamonds());
+        userEntity.setLemons(currencyUpdateDto.getLemons());
 
         UserEntity saved = userRepository.saveAndFlush(userEntity);
 
         historyService.changeCurrency(saved, differenceLemons, differenceDiamonds,
-            currencyUpdateDtoDto.getComment());
+            currencyUpdateDto.getComment(), currencyUpdateDto.getActivitiesId());
 
         String currency;
         if (differenceDiamonds != 0) {
@@ -178,7 +178,7 @@ public class UserService {
                     Integer currentLemons = user.getLemons();
                     user.setLemons(currentLemons + count);
                     UserEntity saved = userRepository.save(user);
-                    historyService.changeCurrency(saved, count, 0, updateDto.getComment());
+                    historyService.changeCurrency(saved, count, 0, updateDto.getComment(), updateDto.getActivitiesId());
                 });
 
         } else if (updateDto.getCurrency().equals("diamonds")) {
@@ -187,7 +187,7 @@ public class UserService {
                     Integer currentDiamonds = user.getDiamonds();
                     user.setDiamonds(currentDiamonds + count);
                     UserEntity saved = userRepository.save(user);
-                    historyService.changeCurrency(saved, 0, count, updateDto.getComment());
+                    historyService.changeCurrency(saved, 0, count, updateDto.getComment(), updateDto.getActivitiesId());
                 });
         } else {
             throw new LemonBankException(ErrorType.NOT_CORRECT_CURRENCY);

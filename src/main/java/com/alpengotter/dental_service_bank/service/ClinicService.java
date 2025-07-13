@@ -5,7 +5,6 @@ import com.alpengotter.dental_service_bank.domain.dto.ClinicCurrencyUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.ClinicResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.StatResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserCurrencyMultipleUpdateDto;
-import com.alpengotter.dental_service_bank.domain.dto.UserCurrencyUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserStatusMultipleUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserStatusUpdateDto;
@@ -36,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ClinicService {
 
-    private final UserRepository userRepository;
     private final ClinicRepository clinicRepository;
     private final UserMapper userMapper;
     private final ClinicMapper clinicMapper;
@@ -44,13 +42,7 @@ public class ClinicService {
     private final AnalitiqueService analitiqueService;
 
     @Transactional
-    public List<UserResponseDto> getAllUsers(Integer offset, Integer limit) {
-        Page<UserEntity> users = userRepository.findAllAndIsActiveIsTrue(PageRequest.of(offset, limit));
-        return userMapper.toListUserResponseDto(users);
-    }
-
-    @Transactional
-    public ClinicResponseDto getUserById(Integer id) {
+    public ClinicResponseDto getClinicById(Integer id) {
         Optional<ClinicEntity> clinic = clinicRepository.findById(id);
         if (clinic.isEmpty()) {
             throw new LemonBankException(ErrorType.CLINIC_NOT_FOUND);
@@ -59,104 +51,6 @@ public class ClinicService {
         return clinicMapper.toClinicResponseDto(clinicEntity);
     }
 
-    @Transactional
-    public UserResponseDto getUserByEmail(String email) {
-        Optional<UserEntity> user = userRepository.findByEmailContainingIgnoreCaseAndIsActiveIsTrue(email);
-        if (user.isEmpty()) {
-            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-        }
-        UserEntity userEntity = user.get();
-        return userMapper.toUserResponseDto(userEntity);
-    }
-
-    @Transactional
-    public UserResponseDto updateEmployeeCurrency(Integer id,
-        UserCurrencyUpdateDto currencyUpdateDtoDto) {
-        Optional<UserEntity> user = userRepository.findByIdAndIsActiveIsTrue(id);
-        if (user.isEmpty()) {
-            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-        }
-        UserEntity userEntity = user.get();
-        Integer currentLemons = userEntity.getLemons();
-        Integer currentDiamonds = userEntity.getDiamonds();
-        Integer differenceLemons = currencyUpdateDtoDto.getLemons() - currentLemons;
-        Integer differenceDiamonds = currencyUpdateDtoDto.getDiamonds() - currentDiamonds;
-
-        userEntity.setDiamonds(currencyUpdateDtoDto.getDiamonds());
-        userEntity.setLemons(currencyUpdateDtoDto.getLemons());
-
-        UserEntity saved = userRepository.save(userEntity);
-
-        historyService.changeCurrency(saved, differenceLemons, differenceDiamonds,
-            currencyUpdateDtoDto.getComment());
-
-        String currency;
-        if (differenceDiamonds != 0) {
-            currency = "diamonds";
-            analitiqueService.saveAnalitique(AnalitiqueType.REWARD.getMessage(), differenceDiamonds, currency);
-        } else if (differenceLemons != 0) {
-            currency = "lemons";
-            analitiqueService.saveAnalitique(AnalitiqueType.REWARD.getMessage(), differenceLemons, currency);
-        }
-
-        return userMapper.toUserResponseDto(saved);
-    }
-
-    private boolean isEnglishSymbols(String value) {
-        return value.matches("^[a-zA-Z0-9.@]+$");
-    }
-
-    @Transactional
-    public UserResponseDto updateEmployeeStatus(Integer id, UserStatusUpdateDto statusUpdateDto) {
-        Optional<UserEntity> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            throw new LemonBankException(ErrorType.USER_NOT_FOUND);
-        }
-        UserEntity userEntity = user.get();
-        userEntity.setIsActive(statusUpdateDto.getIsActive());
-        if (!statusUpdateDto.getIsActive()) {
-            analitiqueService.saveAnalitique(AnalitiqueType.DEACTIVATE.getMessage(), null, null);
-        }
-        UserEntity saved = userRepository.save(userEntity);
-
-        return userMapper.toUserResponseDto(saved);
-    }
-
-    @Transactional
-    public List<Integer> updateCurrencyForMultipleUsers(UserCurrencyMultipleUpdateDto updateDto) {
-        List<Integer> userIds = updateDto.getUserIds();
-        Integer count = updateDto.getCount();
-        List<UserEntity> users = userRepository.findAllByIdInAndIsActiveIsTrue(userIds);
-        if (updateDto.getCurrency().equals("lemons")) {
-            users
-                .forEach(user -> {
-                    Integer currentLemons = user.getLemons();
-                    user.setLemons(currentLemons + count);
-                    UserEntity saved = userRepository.save(user);
-                    historyService.changeCurrency(saved, count, 0, updateDto.getComment());
-                });
-
-        } else if (updateDto.getCurrency().equals("diamonds")) {
-            users
-                .forEach(user -> {
-                    Integer currentDiamonds = user.getDiamonds();
-                    user.setDiamonds(currentDiamonds + count);
-                    UserEntity saved = userRepository.save(user);
-                    historyService.changeCurrency(saved, 0, count, updateDto.getComment());
-                });
-        } else {
-            throw new LemonBankException(ErrorType.NOT_CORRECT_CURRENCY);
-        }
-        return userIds;
-    }
-
-    @Transactional
-    public List<Integer> updateStatusForMultipleUsers(UserStatusMultipleUpdateDto updateDto) {
-        List<Integer> userIds = updateDto.getUserIds();
-        boolean isActive = updateDto.getIsActive();
-        userRepository.updateIsActiveForIds(isActive, userIds);
-        return userIds;
-    }
 
     @Transactional
     public StatResponseDto getAllStatistic() {
@@ -170,9 +64,6 @@ public class ClinicService {
             .build();
     }
 
-    public Set<String> getUniqueJobTitle() {
-        return userRepository.getUniqueJobTitles();
-    }
 
     @Transactional
     public ClinicResponseDto postNewClinic(ClinicBaseDto clinicBaseDto) {
@@ -212,7 +103,7 @@ public class ClinicService {
 
         ClinicEntity saved = clinicRepository.save(clinicEntity);
 
-        historyService.changeCurrencyClinic(saved, differenceLemons, currencyUpdateDto.getComment());
+        historyService.changeCurrencyClinic(saved, differenceLemons, currencyUpdateDto.getComment(), currencyUpdateDto.getActivitiesId());
 
 //        String currency;
 //        if (differenceDiamonds != 0) {

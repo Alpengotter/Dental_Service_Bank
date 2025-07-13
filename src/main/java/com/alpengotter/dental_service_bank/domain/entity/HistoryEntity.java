@@ -38,6 +38,9 @@ public class HistoryEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clinic_id")
     private ClinicEntity clinic;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activities_id")
+    private ActivitiesEntity activities;
     @Column(name = "date_")
     private LocalDateTime date;
     @Column(name = "type_")

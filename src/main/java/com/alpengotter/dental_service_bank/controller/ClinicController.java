@@ -4,18 +4,9 @@ import com.alpengotter.dental_service_bank.domain.dto.ClinicBaseDto;
 import com.alpengotter.dental_service_bank.domain.dto.ClinicCurrencyUpdateDto;
 import com.alpengotter.dental_service_bank.domain.dto.ClinicResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.StatResponseDto;
-import com.alpengotter.dental_service_bank.domain.dto.UserBaseDto;
-import com.alpengotter.dental_service_bank.domain.dto.UserCurrencyMultipleUpdateDto;
-import com.alpengotter.dental_service_bank.domain.dto.UserCurrencyUpdateDto;
-import com.alpengotter.dental_service_bank.domain.dto.UserResponseDto;
-import com.alpengotter.dental_service_bank.domain.dto.UserStatusMultipleUpdateDto;
-import com.alpengotter.dental_service_bank.domain.dto.UserStatusUpdateDto;
 import com.alpengotter.dental_service_bank.service.ClinicService;
-import com.alpengotter.dental_service_bank.service.UserService;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -42,7 +33,7 @@ public class ClinicController {
 
     @GetMapping("/{id}")
     public ClinicResponseDto getClinicById(@PathVariable("id") Integer id) {
-        return clinicService.getUserById(id);
+        return clinicService.getClinicById(id);
     }
 
     @GetMapping("/find-by-name")

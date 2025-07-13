@@ -6,4 +6,5 @@ import lombok.Data;
 public class ClinicCurrencyUpdateDto {
     private Long currency;
     private String comment;
+    private Integer activitiesId;
 }
