@@ -5,6 +5,7 @@ import com.alpengotter.dental_service_bank.domain.dto.OrderResponseDto;
 import com.alpengotter.dental_service_bank.domain.entity.ActivitiesEntity;
 import com.alpengotter.dental_service_bank.domain.mapper.ActivitiesMapper;
 import com.alpengotter.dental_service_bank.domain.repository.ActivitiesRepository;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,10 @@ public class ActivitiesService {
 
     @Transactional
     public List<ActivitiesResponseDto> getAllActiveNominations(Pageable pageable) {
-        List<ActivitiesEntity> activeNominations = activitiesRepository.findAllByIsActiveIsTrue();
+        List<ActivitiesEntity> activeNominations = activitiesRepository.findAllByIsActiveIsTrue()
+            .stream()
+            .sorted(Comparator.comparing(ActivitiesEntity::getTitle))
+            .toList();
         return activitiesMapper.toActivitiesResponseDtoList(activeNominations);
     }
 
