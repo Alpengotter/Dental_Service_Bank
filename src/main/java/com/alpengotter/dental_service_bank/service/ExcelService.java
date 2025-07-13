@@ -6,14 +6,19 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import com.alpengotter.dental_service_bank.domain.dto.ActivitiesExcelDto;
+import com.alpengotter.dental_service_bank.domain.dto.ExcelActivitiesAndYearDto;
 import com.alpengotter.dental_service_bank.domain.dto.ExcelDateFilterDto;
 import com.alpengotter.dental_service_bank.domain.dto.HistoryExcelDto;
 import com.alpengotter.dental_service_bank.domain.dto.OrdersExcelDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserExcelDto;
+import com.alpengotter.dental_service_bank.domain.entity.ActivitiesEntity;
 import com.alpengotter.dental_service_bank.domain.entity.UserEntity;
+import com.alpengotter.dental_service_bank.domain.mapper.ActivitiesMapper;
 import com.alpengotter.dental_service_bank.domain.mapper.HistoryMapper;
 import com.alpengotter.dental_service_bank.domain.mapper.OrderMapper;
 import com.alpengotter.dental_service_bank.domain.mapper.UserMapper;
+import com.alpengotter.dental_service_bank.domain.repository.ActivitiesRepository;
 import com.alpengotter.dental_service_bank.domain.repository.UserRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,9 +33,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ExcelService {
     private final UserRepository userRepository;
+    private final ActivitiesRepository activitiesRepository;
     private final UserMapper userMapper;
     private final OrderMapper orderMapper;
     private final HistoryMapper historyMapper;
+    private final ActivitiesMapper activitiesMapper;
 
     public byte[] generateExcelEmployees() throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -119,6 +126,37 @@ public class ExcelService {
         return outputStream.toByteArray();
     }
 
+    public byte[] generateExcelActivities(Integer year) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        List<ActivitiesExcelDto> excelList = activitiesMapper.toActivitiesExcelDtoList(generateOrderExcelActivitiesAndYearDtos(year));
+
+        WriteCellStyle headerStyle = new WriteCellStyle();
+        WriteFont headerFont = new WriteFont();
+        headerFont.setBold(true); // Жирный шрифт
+        headerFont.setFontHeightInPoints((short) 9); // Размер шрифта
+        headerStyle.setWriteFont(headerFont);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex()); // Цвет фона
+        WriteCellStyle contentStyle = new WriteCellStyle();
+        HorizontalCellStyleStrategy styleStrategy = new HorizontalCellStyleStrategy(headerStyle, contentStyle);
+
+        ExcelWriter excelWriter = EasyExcel.write(outputStream, ActivitiesExcelDto.class)
+            .registerWriteHandler(styleStrategy)
+//            .registerWriteHandler(new CustomCellWriteHandler())
+            .build();
+
+        WriteSheet writeSheet = EasyExcel.writerSheet("Отчет")
+            .build();
+
+        excelWriter.write(excelList, writeSheet);
+
+
+        // Завершаем запись
+        excelWriter.finish();
+
+        return outputStream.toByteArray();
+    }
+
     public byte[] generateExcelResourseTransactions(Integer year) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -178,5 +216,16 @@ public class ExcelService {
                 .build());
         }
         return filterDtos;
+    }
+
+    private List<ExcelActivitiesAndYearDto> generateOrderExcelActivitiesAndYearDtos(Integer year) {
+        List<ExcelActivitiesAndYearDto> result = new ArrayList<>();
+        activitiesRepository.findAllByIsActiveIsTrue().stream()
+            .map(ActivitiesEntity::getId)
+            .forEach(id -> result.add(ExcelActivitiesAndYearDto.builder()
+                .activitiesId(id)
+                .year(year)
+                .build()));
+        return result;
     }
 }

@@ -1,7 +1,9 @@
 package com.alpengotter.dental_service_bank.domain.mapper;
 
 
+import com.alpengotter.dental_service_bank.domain.dto.ActivitiesExcelDto;
 import com.alpengotter.dental_service_bank.domain.dto.ActivitiesResponseDto;
+import com.alpengotter.dental_service_bank.domain.dto.ExcelActivitiesAndYearDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserBaseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserExcelDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserResponseDto;
@@ -23,5 +25,10 @@ public interface ActivitiesMapper {
 
     ActivitiesResponseDto toActivitiesResponseDto(ActivitiesEntity entity);
     List<ActivitiesResponseDto> toActivitiesResponseDtoList(List<ActivitiesEntity> entities);
+
+    @Mapping(target = "title", source = "dto", qualifiedByName = "mapActivitiesTitle")
+    @Mapping(target = "countActivities", source = "dto", qualifiedByName = "mapCountActivities")
+    ActivitiesExcelDto toActivitiesExcelDto(ExcelActivitiesAndYearDto dto);
+    List<ActivitiesExcelDto> toActivitiesExcelDtoList(List<ExcelActivitiesAndYearDto> dtos);
 
 }

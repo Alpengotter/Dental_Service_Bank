@@ -51,4 +51,15 @@ public class ReportController {
             .body(resource);
     }
 
+    @GetMapping("/activities")
+    public ResponseEntity<ByteArrayResource> downloadExcelActivities(@RequestParam(value = "year") Integer year) throws IOException {
+        byte[] excelBytes = excelService.generateExcelActivities(year);
+        ByteArrayResource resource = new ByteArrayResource(excelBytes);
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Report.xlsx")
+            .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+            .body(resource);
+    }
+
 }
