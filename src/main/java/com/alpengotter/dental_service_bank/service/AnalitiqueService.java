@@ -2,14 +2,17 @@ package com.alpengotter.dental_service_bank.service;
 
 import com.alpengotter.dental_service_bank.domain.dto.AnalitiqueResponseDto;
 import com.alpengotter.dental_service_bank.domain.dto.AnalitiqueSummaryResponseDto;
+import com.alpengotter.dental_service_bank.domain.entity.ActivitiesEntity;
 import com.alpengotter.dental_service_bank.domain.entity.AnalitiqueEntity;
 import com.alpengotter.dental_service_bank.domain.entity.HistoryEntity;
 import com.alpengotter.dental_service_bank.domain.mapper.AnalitiqueMapper;
+import com.alpengotter.dental_service_bank.domain.repository.ActivitiesRepository;
 import com.alpengotter.dental_service_bank.domain.repository.AnalitiqueRepository;
 import com.alpengotter.dental_service_bank.domain.repository.HistoryRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ public class AnalitiqueService {
     private final AnalitiqueRepository analitiqueRepository;
     private final AnalitiqueMapper analitiqueMapper;
     private final HistoryRepository historyRepository;
+    private final ActivitiesRepository activitiesRepository;
     private static final String LEMONS_ACCRUED_BY_USER = "lemons_accrued_by_user";
     private static final String LEMONS_ACCRUED_BY_CLINIC = "lemons_accrued_by_clinic";
 
@@ -138,13 +142,23 @@ public class AnalitiqueService {
 
     public List<AnalitiqueSummaryResponseDto> getAnalitiqueSummaryByComment(Integer year) {
         List<AnalitiqueSummaryResponseDto> result = new ArrayList<>();
-        List<String> uniqueComments = historyRepository.findUniqueCommentsByYear(year);
-        Map<String, List<HistoryEntity>> analitiqueForComments = getAnalitiqueForComments(uniqueComments, year);
+        List<ActivitiesEntity> activities = activitiesRepository.findAllByIsActiveIsTrue();
+        List<String> activitiesTitle = activities.stream()
+            .sorted(Comparator.comparingInt(ActivitiesEntity::getId))
+            .map(ActivitiesEntity::getTitle)
+            .toList();
+        List<Integer> activitiesId = activities.stream()
+            .sorted(Comparator.comparingInt(ActivitiesEntity::getId))
+            .map(ActivitiesEntity::getId)
+            .toList();
+//        List<String> uniqueComments = historyRepository.findUniqueCommentsByYear(year);
 
-        for (String comment : uniqueComments) {
+        Map<String, List<HistoryEntity>> analitiqueForTitles = getAnalitiqueForTitles(activitiesId, activitiesTitle, year);
+
+        for (String comment : activitiesTitle) {
             List<Integer> totalMonthList = new ArrayList<>(Collections.nCopies(12, 0));
             Integer total = 0;
-            List<HistoryEntity> analitiqueEntities = analitiqueForComments.get(comment);
+            List<HistoryEntity> analitiqueEntities = analitiqueForTitles.get(comment);
             for (HistoryEntity entity: analitiqueEntities) {
                 int monthValue = entity.getDate().getMonthValue();
                 totalMonthList.set(monthValue - 1, totalMonthList.get(monthValue - 1) + Math.abs(entity.getValue()));
@@ -160,10 +174,16 @@ public class AnalitiqueService {
     }
 
 
-    private Map<String, List<HistoryEntity>> getAnalitiqueForComments(List<String> comments, Integer year) {
+    private Map<String, List<HistoryEntity>> getAnalitiqueForTitles(
+        List<Integer> activitiesId,
+        List<String> activitiesTitles,
+        Integer year
+    ) {
         Map<String, List<HistoryEntity>> result = new HashMap<>();
-        for (String comment : comments) {
-            result.put(comment, historyRepository.findByLemonsAccruedByComment(null, year, comment));
+        int i = 0;
+        for (String title : activitiesTitles) {
+            result.put(title, historyRepository.findByLemonsAccruedByTitle(null, year, activitiesId.get(i)));
+            i++;
         }
         return result;
     }

@@ -103,7 +103,9 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
 
     @Query("select h from HistoryEntity h "
         + "where YEAR(h.date) = :year "
-        + "and h.activities.id = :id")
+        + "and h.activities.id = :id "
+        + "and h.currency = 'lemons' "
+        + "and h.value > 0 ")
     List<HistoryEntity> findByActivitiesIdAndYear(Integer id, Integer year);
 
     @Query("select h from HistoryEntity h "
@@ -113,6 +115,14 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Integer>
         + "and h.value > 0 "
         + "and h.clinic is not null")
     List<HistoryEntity> findByLemonsAccruedByClinic(Integer month, Integer year);
+
+    @Query("select h from HistoryEntity h "
+        + "where YEAR(h.date) = :year "
+        + "and (:month IS NULL OR MONTH(h.date) = :month) "
+        + "and h.currency = 'lemons' "
+        + "and h.value > 0 "
+        + "and h.activities.id = :activitiesId ")
+    List<HistoryEntity> findByLemonsAccruedByTitle(Integer month, Integer year, Integer activitiesId);
 
     @Query("select h from HistoryEntity h "
         + "where YEAR(h.date) = :year "
