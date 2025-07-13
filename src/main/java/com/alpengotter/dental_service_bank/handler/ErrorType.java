@@ -16,6 +16,7 @@ public enum ErrorType {
     ACTIVITIES_NOT_FOUND("Activities not found", HttpStatus.NOT_FOUND),
     HISTORY_NOT_FOUND("History not found", HttpStatus.NOT_FOUND),
     USER_ALREADY_EXIST("User already exist", HttpStatus.BAD_REQUEST),
+    ACTIVITIES_ALREADY_EXIST("Activities already exist", HttpStatus.BAD_REQUEST),
     CLINIC_ALREADY_EXIST("Clinic already exist", HttpStatus.BAD_REQUEST),
     NOT_CORRECT_CURRENCY("Currency not correct", HttpStatus.BAD_REQUEST),
     INCORRECT_PASSWORD("Incorrect password", HttpStatus.BAD_REQUEST),

@@ -3,6 +3,7 @@ package com.alpengotter.dental_service_bank.domain.mapper;
 
 import com.alpengotter.dental_service_bank.domain.dto.ActivitiesExcelDto;
 import com.alpengotter.dental_service_bank.domain.dto.ActivitiesResponseDto;
+import com.alpengotter.dental_service_bank.domain.dto.ActivityCreateDto;
 import com.alpengotter.dental_service_bank.domain.dto.ExcelActivitiesAndYearDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserBaseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserExcelDto;
@@ -26,9 +27,22 @@ public interface ActivitiesMapper {
     ActivitiesResponseDto toActivitiesResponseDto(ActivitiesEntity entity);
     List<ActivitiesResponseDto> toActivitiesResponseDtoList(List<ActivitiesEntity> entities);
 
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "createdBy", source = "dto", qualifiedByName = "mapActivitiesAdminName")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updatedBy", source = "dto", qualifiedByName = "mapActivitiesAdminName")
+    @Mapping(target = "isActive", source = "dto.isActive", defaultValue = "true")
+    ActivitiesEntity toActivitiesEntity(ActivityCreateDto dto);
+
     @Mapping(target = "title", source = "dto", qualifiedByName = "mapActivitiesTitle")
     @Mapping(target = "countActivities", source = "dto", qualifiedByName = "mapCountActivities")
     ActivitiesExcelDto toActivitiesExcelDto(ExcelActivitiesAndYearDto dto);
     List<ActivitiesExcelDto> toActivitiesExcelDtoList(List<ExcelActivitiesAndYearDto> dtos);
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "updatedBy", source = "source", qualifiedByName = "mapActivitiesAdminName")
+    @Mapping(target = "createdAt", expression = "java(target.getCreatedAt())")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    void updateActivity(ActivityCreateDto source, @MappingTarget ActivitiesEntity target, Integer id);
 
 }
