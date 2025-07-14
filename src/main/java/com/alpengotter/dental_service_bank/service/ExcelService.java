@@ -23,6 +23,7 @@ import com.alpengotter.dental_service_bank.domain.repository.UserRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -129,7 +130,10 @@ public class ExcelService {
     public byte[] generateExcelActivities(Integer year) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        List<ActivitiesExcelDto> excelList = activitiesMapper.toActivitiesExcelDtoList(generateOrderExcelActivitiesAndYearDtos(year));
+        List<ActivitiesExcelDto> excelList = activitiesMapper.toActivitiesExcelDtoList(generateOrderExcelActivitiesAndYearDtos(year))
+            .stream()
+            .sorted(Comparator.comparingInt(ActivitiesExcelDto::getCountActivities).reversed())
+            .toList();
 
         WriteCellStyle headerStyle = new WriteCellStyle();
         WriteFont headerFont = new WriteFont();
