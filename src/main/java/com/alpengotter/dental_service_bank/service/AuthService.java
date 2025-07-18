@@ -4,6 +4,7 @@ import com.alpengotter.dental_service_bank.domain.dto.AdminRegisterDto;
 import com.alpengotter.dental_service_bank.domain.dto.JwtRequestDto;
 import com.alpengotter.dental_service_bank.domain.dto.JwtResponseDto;
 import com.alpengotter.dental_service_bank.domain.entity.UserEntity;
+import com.alpengotter.dental_service_bank.domain.mapper.UserMapper;
 import com.alpengotter.dental_service_bank.domain.repository.UserRepository;
 import com.alpengotter.dental_service_bank.handler.ErrorType;
 import com.alpengotter.dental_service_bank.handler.exception.LemonBankException;
@@ -18,15 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final UserMapper userMapper;
 
     @Transactional
     public UserEntity registerNewUser(AdminRegisterDto adminRegisterDto) {
-        UserEntity newUser = new UserEntity();
-        newUser.setEmail(adminRegisterDto.getEmail());
-        newUser.setPassword(passwordEncoder.encode(adminRegisterDto.getPassword()));
-        return userRepository.save(newUser);
+        UserEntity userEntity = userMapper.toUserEntity(adminRegisterDto);
+        return userRepository.save(userEntity);
     }
 
     @Transactional

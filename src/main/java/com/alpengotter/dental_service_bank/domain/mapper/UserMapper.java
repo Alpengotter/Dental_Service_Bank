@@ -1,6 +1,7 @@
 package com.alpengotter.dental_service_bank.domain.mapper;
 
 
+import com.alpengotter.dental_service_bank.domain.dto.AdminRegisterDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserBaseDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserExcelDto;
 import com.alpengotter.dental_service_bank.domain.dto.UserResponseDto;
@@ -23,6 +24,11 @@ public interface UserMapper {
     List<UserResponseDto> toListUserResponseDto(List<UserEntity> entities);
     @Mapping(target = "isActive", source = "userBaseDto.isActive", defaultValue = "true")
     UserEntity toUserEntity(UserBaseDto userBaseDto);
+    @Mapping(target = "isActive", constant = "true")
+    @Mapping(target = "userRole", constant = "ADMIN")
+    @Mapping(target = "lemons", constant = "0")
+    @Mapping(target = "diamonds", constant = "0")
+    UserEntity toUserEntity(AdminRegisterDto adminRegisterDto);
 
     @Mapping(target = "name", source = "userEntity", qualifiedByName = "mapFullName")
     @Mapping(target = "clinic", source = "userEntity", qualifiedByName = "mapClinics")
