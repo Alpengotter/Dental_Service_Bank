@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private List<String> allowedOrigins = List.of(
         "https://motivora.ru",
-        "https://demo.motivora.ru/");
+        "https://demo.motivora.ru");
 
     @Bean
     PasswordEncoder passwordEncoder() {
